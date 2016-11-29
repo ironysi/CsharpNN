@@ -2,7 +2,7 @@ namespace NeuralNetworkTesting
 {
     public interface INeuralNet
     {
-        INeuralLayer PerceptionLayer { get; }
+        INeuralLayer InputLayer { get; }
         INeuralLayer HiddenLayer { get; }
         INeuralLayer OutputLayer { get; }
 

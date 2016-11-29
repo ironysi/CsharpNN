@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{27E14B5D-F2BD-433E-86DD-3C8EE0E3F173}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{7423FB0A-6130-43E7-9377-7D6EA3BCF02E}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NNConsole</RootNamespace>
-    <AssemblyName>NNConsole</AssemblyName>
+    <RootNamespace>DataSet</RootNamespace>
+    <AssemblyName>DataSet</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -47,22 +44,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="BreastData.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
+    <Content Include="Data\Breasts.txt" />
+    <Content Include="Data\Iris.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataSet\Data.csproj">
-      <Project>{7423FB0A-6130-43E7-9377-7D6EA3BCF02E}</Project>
-      <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NeuralNetworkTesting\NeuralNetLib.csproj">
-      <Project>{dc202f12-30a7-4c24-9cac-fe26c4198ef6}</Project>
-      <Name>NeuralNetLib</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

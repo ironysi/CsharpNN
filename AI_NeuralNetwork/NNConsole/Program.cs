@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using MyDataSet;
 using NeuralNetworkTesting;
 
 namespace NNConsole
@@ -8,107 +9,43 @@ namespace NNConsole
     {
         static void Main(string[] args)
         {
+            //double[][] inputs = new double[4][];
+            //inputs[0] = new double[] { 1, 1 };
+            //inputs[1] = new double[] { 1, 0 };
+            //inputs[2] = new double[] { 0, 1 };
+            //inputs[3] = new double[] { 0, 0 };
 
-            NeuralNet net = new NeuralNet();
+            //double[][] outputs = new double[4][];
+            //outputs[0] = new double[] { 1 };
+            //outputs[1] = new double[] { 0 };
+            //outputs[2] = new double[] { 0 };
+            //outputs[3] = new double[] { 0 };
 
-            double[][] inputs = new double[4][];
-            inputs[0] = new double[] { 1, 1 };
-            inputs[1] = new double[] { 0, 1 };
-            inputs[2] = new double[] { 1, 0 };
-            inputs[3] = new double[] { 0, 0 };
+            Data data = new Data("Iris.txt", 4, 1, 0.8);
+            data.FillData();
+            double[][] inputs = data.Inputs.ToRowArrays();
+            double[][] outputs = data.Outputs.ToRowArrays();
+            // initialize with x perception neurons x hidden layer neurons x output neurons and a learning rate
+            double learningRate = 0.1;
+            NeuralNet net = new NeuralNet(4, 4, 1, learningRate);
 
-            double[][] outputs = new double[4][];
-            outputs[0] = new double[] { 0 };
-            outputs[1] = new double[] { 1 };
-            outputs[2] = new double[] { 1 };
-            outputs[3] = new double[] { 0 };
+            net.Train(inputs, outputs, 1000);
 
+            net.InputLayer[0].Output = 5.9;
+            net.InputLayer[1].Output = 3;
+            net.InputLayer[2].Output = 5.1;
+            net.InputLayer[3].Output = 1.8;
+            net.Pulse();
+            Console.WriteLine(net.OutputLayer[0].Output);
 
-            // initialize with 2 perception neurons 2 hidden layer neurons 1 output neuron
-            net.Initialize(1, 2, 2, 1);
+            net.InputLayer[0].Output = 5.7;
+            net.InputLayer[1].Output = 2.8;
+            net.InputLayer[2].Output = 4.5;
+            net.InputLayer[3].Output = 1.3;
+            net.Pulse();
+            Console.WriteLine(net.OutputLayer[0].Output);
 
-            int iterations = 1;
-            do
-            {
-                net.LearningRate = 3;
-                net.Train(inputs, outputs, TrainingType.BackPropogation, iterations);
-
-                Console.WriteLine(net.PerceptionLayer[0].Output);
-                Console.WriteLine(net.PerceptionLayer[1].Output);
-                Console.ReadLine();
-                net.PerceptionLayer[0].Output = 0;
-                net.PerceptionLayer[1].Output = 0;
-
-                net.Pulse();
-
-                //ll = net.OutputLayer[0].Output;
-
-                net.PerceptionLayer[0].Output = 1;
-                net.PerceptionLayer[1].Output = 0;
-
-                net.Pulse();
-
-                //hl = net.OutputLayer[0].Output;
-
-                net.PerceptionLayer[0].Output = 0;
-                net.PerceptionLayer[1].Output = 1;
-
-                net.Pulse();
-
-                //lh = net.OutputLayer[0].Output;
-
-                net.PerceptionLayer[0].Output = 1;
-                net.PerceptionLayer[1].Output = 1;
-
-                net.Pulse();
-
-                //hh = net.OutputLayer[0].Output;
-            }
-            // really train this thing well...
-            while (true);
-
-
-            //net.PerceptionLayer[0].Output = low;
-            //net.PerceptionLayer[1].Output = low;
-
-            //net.Pulse();
-
-            //ll = net.OutputLayer[0].Output;
-
-            //net.PerceptionLayer[0].Output = high;
-            //net.PerceptionLayer[1].Output = low;
-
-            //net.Pulse();
-
-            //hl = net.OutputLayer[0].Output;
-
-            //net.PerceptionLayer[0].Output = low;
-            //net.PerceptionLayer[1].Output = high;
-
-            //net.Pulse();
-
-            //lh = net.OutputLayer[0].Output;
-
-            //net.PerceptionLayer[0].Output = high;
-            //net.PerceptionLayer[1].Output = high;
-
-            //net.Pulse();
-
-            //hh = net.OutputLayer[0].Output;
-
-            //bld.Remove(0, bld.Length);
-            //bld.Append((count * iterations).ToString()).Append(" iterations required for training\n");
-
-            //bld.Append("hh: ").Append(hh.ToString()).Append(" < .5\n");
-            //bld.Append("ll: ").Append(ll.ToString()).Append(" < .5\n");
-
-            //bld.Append("hl: ").Append(hl.ToString()).Append(" > .5\n");
-            //bld.Append("lh: ").Append(lh.ToString()).Append(" > .5\n");
-
-            //Console.WriteLine(bld.ToString());
-
-            //Console.ReadKey();
-
+            Console.ReadLine();
         }
     }
 }
