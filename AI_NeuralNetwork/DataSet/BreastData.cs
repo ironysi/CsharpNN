@@ -66,28 +66,25 @@ namespace MyDataSet
         private double[,] _parse()
         {
             string[] firstLine = _lines[0].Split(',');
-            double[,] result = new double[_lines.Count,firstLine.Length];
+            double[,] result = new double[_lines.Count, firstLine.Length-1];
 
             for (int i = 0; i < _lines.Count; i++)
             {
                 string line = _lines[i];
                 string[] strings = line.Split(',');
 
-                result[i, 0] = double.Parse(strings[0]);
-                result[i, 1] = double.Parse(strings[1]);
-                result[i, 2] = double.Parse(strings[2]);
-                result[i, 3] = double.Parse(strings[3]);
-
-                switch (strings[4])
+                for (int j = 0; j < 30; j++)
                 {
-                    case "Iris-setosa":
-                        result[i, 4] = 0.0001;
+                    result[i, j] = double.Parse(strings[j+2]);
+                }
+
+                switch (strings[1])
+                {
+                    case "M":
+                        result[i, 30] = 0.0001;
                         break;
-                    case "Iris-versicolor":
-                        result[i, 4] = 0.5000;
-                        break;
-                    case "Iris-virginica":
-                        result[i, 4] = 0.9999;
+                    case "B":
+                        result[i, 30] = 0.999;
                         break;
                 }
             }
