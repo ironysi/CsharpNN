@@ -17,7 +17,7 @@ namespace MyDataSet
         private readonly int _outputColumnsCount;
         private readonly double _percentage;
 
-        public Data()
+        public Data():this("",0,0,0.0)
         {
         }
 
@@ -27,10 +27,20 @@ namespace MyDataSet
             _inputColumnsCount = inputColumnsCount;
             _outputColumnsCount = outputColumnsCount;
             _percentage = percentage;
+
+            FillData();
         }
 
-        public Matrix<double> Inputs { get; set; }
-        public Matrix<double> Outputs { get; set; }
+
+        private Matrix<double> _outputs;
+        public Matrix<double> LearningOutputs { get; set; }
+        public Matrix<double> TrainingOutputs { get; set; }
+
+        private Matrix<double> _inputs;
+        public Matrix<double> LearningInputs { get; set; }
+        public Matrix<double> TrainingInputs { get; set; }
+
+
 
         public void FillData()
         {
@@ -38,18 +48,35 @@ namespace MyDataSet
             _shuffleLines();
             double[,] parsed = _parse();
             _allDataMatrix = Matrix<double>.Build.DenseOfArray(parsed);
-            Inputs = _allDataMatrix.SubMatrix(0, _allDataMatrix.RowCount, 0, _inputColumnsCount);
-            Outputs = _allDataMatrix.SubMatrix(0, _allDataMatrix.RowCount, _inputColumnsCount, _outputColumnsCount);
+            _inputs = _allDataMatrix.SubMatrix(0, _allDataMatrix.RowCount, 0, _inputColumnsCount);
+            _outputs = _allDataMatrix.SubMatrix(0, _allDataMatrix.RowCount, _inputColumnsCount, _outputColumnsCount);
+
+            DivideIntoTestingAndTrainingSet();
         }
 
+        public Matrix<double> GetInputs()
+        {
+            return _inputs;
+        }
 
+        public Matrix<double> GetOutputs()
+        {
+            return _outputs;
+        }
+             
         public void DivideIntoTestingAndTrainingSet()
         {
-            int trainingInputsCount = (int)(_percentage * Inputs.RowCount);
-            Matrix<double> trainingInputs = Inputs.SubMatrix(0, trainingInputsCount, 0,
-                Inputs.ColumnCount);
-            Matrix<double> learningInputs = Inputs.SubMatrix(trainingInputsCount, Inputs.RowCount - trainingInputsCount,
-                0, Inputs.ColumnCount);
+            int trainingInputsCount = (int)(_percentage * _inputs.RowCount);
+
+            LearningInputs = _inputs.SubMatrix(0, trainingInputsCount, 0,
+                _inputs.ColumnCount);
+            TrainingInputs = _inputs.SubMatrix(trainingInputsCount, _inputs.RowCount - trainingInputsCount,
+                0, _inputs.ColumnCount);
+
+            LearningOutputs = _outputs.SubMatrix(0, trainingInputsCount, 0,
+                _outputs.ColumnCount);
+            TrainingOutputs = _outputs.SubMatrix(trainingInputsCount, _outputs.RowCount - trainingInputsCount,
+                0, _outputs.ColumnCount);
         }
 
         private void _readLines()
@@ -66,7 +93,7 @@ namespace MyDataSet
         private double[,] _parse()
         {
             string[] firstLine = _lines[0].Split(',');
-            double[,] result = new double[_lines.Count,firstLine.Length];
+            double[,] result = new double[_lines.Count, firstLine.Length];
 
             for (int i = 0; i < _lines.Count; i++)
             {
@@ -84,13 +111,22 @@ namespace MyDataSet
                         result[i, 4] = 0.0001;
                         break;
                     case "Iris-versicolor":
-                        result[i, 4] = 0.5000;
+                        result[i, 4] = 0.5555;
                         break;
                     case "Iris-virginica":
                         result[i, 4] = 0.9999;
                         break;
                 }
             }
+
+            //for (int i = 0; i < _lines.Count; i++)
+            //{
+            //    for (int j = 0; j < 4; j++)
+            //    {
+            //        result[i, j] = result[i, j]/10;
+            //    }
+            //}
+
             return result;
         }
     }

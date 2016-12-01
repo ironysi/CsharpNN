@@ -69,7 +69,7 @@ namespace NeuralNetworkTesting
             }
         }
 
-        public void Train(double[][] inputs, double[][] expected, int iterations)
+        public void Train(double[][] inputs, double[][] outputs, int iterations)
         {
             lock (this)
             {
@@ -78,9 +78,27 @@ namespace NeuralNetworkTesting
                     InitializeLearning(); // set all weight changes to zero
 
                     for (int j = 0; j < inputs.Length; j++)
-                        BackPropogation_TrainingSession(this, inputs[j], expected[j]);
-
+                        BackPropogation_TrainingSession(this, inputs[j], outputs[j]);
+                  
                     ApplyLearning(); // apply batch of cumlutive weight changes
+                }
+            }
+        }
+
+        public void Test(double[][] inputs, double[][] outputs)
+        {
+            lock (this)
+            {
+                for (int i = 0; i < inputs.Length; i++)
+                {
+                      InitializeLearning(); // set all weight changes to zero
+
+                    for (int j = 0; j < inputs.Length; j++)
+                    {
+                        BackPropogation_TrainingSession(this, inputs[j], outputs[j]);
+
+                    }
+                       ApplyLearning(); // apply batch of cumlutive weight changes
                 }
             }
         }
