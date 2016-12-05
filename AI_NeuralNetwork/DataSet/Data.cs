@@ -8,29 +8,9 @@ namespace MyDataSet
 {
     public class Data
     {
-        private Matrix<double> _allDataMatrix;
+        private Matrix<double> _allData;
 
-        private readonly string _fileName;
-        private readonly int _inputColumnsCount;
-
-        private List<string> _lines;
-        private readonly int _outputColumnsCount;
-        private readonly double _percentage;
-
-        public Data():this("",0,0,0.0)
-        {
-        }
-
-        public Data(string fileName, int inputColumnsCount, int outputColumnsCount, double percentage)
-        {
-            _fileName = fileName;
-            _inputColumnsCount = inputColumnsCount;
-            _outputColumnsCount = outputColumnsCount;
-            _percentage = percentage;
-
-            FillData();
-        }
-
+        private double _percentage;
 
         private Matrix<double> _outputs;
         public Matrix<double> LearningOutputs { get; set; }
@@ -41,29 +21,81 @@ namespace MyDataSet
         public Matrix<double> TrainingInputs { get; set; }
 
 
-
-        public void FillData()
+        public Data(string fileName, int inputColumnsCount, int outputColumnsCount, double percentage, string[] columnTypes, int[] outputColumns = null, int[] ignoredColumns = null)
         {
-            _readLines();
-            _shuffleLines();
-            double[,] parsed = _parse();
-            _allDataMatrix = Matrix<double>.Build.DenseOfArray(parsed);
-            _inputs = _allDataMatrix.SubMatrix(0, _allDataMatrix.RowCount, 0, _inputColumnsCount);
-            _outputs = _allDataMatrix.SubMatrix(0, _allDataMatrix.RowCount, _inputColumnsCount, _outputColumnsCount);
+            _allData = _fillData(columnTypes, fileName, outputColumns, ignoredColumns);
+            _percentage = percentage;
+
+            _inputs = _allData.SubMatrix(0, _allData.RowCount, 0, inputColumnsCount);
+            _outputs = _allData.SubMatrix(0, _allData.RowCount, inputColumnsCount, outputColumnsCount);
 
             DivideIntoTestingAndTrainingSet();
         }
 
-        public Matrix<double> GetInputs()
+        private Matrix<double> _fillData(string[] columnTypes, string fileName, int[] outputColumns, int[] ignoredColumns)
         {
-            return _inputs;
+            string[][] lines = _readLines(fileName);
+           
+            Standardizer standardizer = new Standardizer(lines, columnTypes, outputColumns, ignoredColumns);
+            double[][] dataJaggged = standardizer.StandardizeAll(lines);
+            double[,] data = JaggedTo2DArray(dataJaggged);
+            Matrix<double> result = Matrix<double>.Build.DenseOfArray(data);
+            return result;
         }
 
-        public Matrix<double> GetOutputs()
+        private Matrix<double> _fillTrainingData(Matrix<double> allData, double percentage)
         {
-            return _outputs;
+            int trainingRowCount = (int)(percentage * allData.RowCount);
+            Matrix<double> result = allData.SubMatrix(0, trainingRowCount, 0,
+                allData.ColumnCount);
+            return result;
         }
-             
+
+        private Matrix<double> _fillTestingData(Matrix<double> allData, double percentage)
+        {
+            int testingRowCount = (int)(percentage * allData.RowCount);
+            Matrix<double> result = allData.SubMatrix(testingRowCount, allData.RowCount - testingRowCount, 0, allData.ColumnCount);
+            return result;
+        }
+
+        private static string[][] _readLines(string fileName)
+        {
+            string[] allLines = File.ReadAllLines($"../../../DataSet/Data/{fileName}");
+
+            Random rng = new Random(1);
+            allLines = allLines.OrderBy(x => rng.Next()).ToArray();
+
+            string[][] lines = new string[allLines.Length][];
+            for (int i = 0; i < allLines.Length; i++)
+            {
+                lines[i] = allLines[i].Split(',');
+            }
+            return lines;
+        }
+        private static T[,] JaggedTo2DArray<T>(T[][] source)
+        {
+            try
+            {
+                int firstDim = source.Length;
+                int secondDim = source.GroupBy(row => row.Length).Single().Key; // throws InvalidOperationException if source is not rectangular
+
+                var result = new T[firstDim, secondDim];
+                for (int i = 0; i < firstDim; ++i)
+                    for (int j = 0; j < secondDim; ++j)
+                        result[i, j] = source[i][j];
+
+                return result;
+            }
+            catch (InvalidOperationException)
+            {
+                throw new InvalidOperationException("The given jagged array is not rectangular.");
+            }
+        }
+
+
+
+
+
         public void DivideIntoTestingAndTrainingSet()
         {
             int trainingInputsCount = (int)(_percentage * _inputs.RowCount);
@@ -77,57 +109,6 @@ namespace MyDataSet
                 _outputs.ColumnCount);
             TrainingOutputs = _outputs.SubMatrix(trainingInputsCount, _outputs.RowCount - trainingInputsCount,
                 0, _outputs.ColumnCount);
-        }
-
-        private void _readLines()
-        {
-            _lines = File.ReadLines($"../../../DataSet/Data/{_fileName}").ToList();
-        }
-
-        private void _shuffleLines()
-        {
-            Random rng = new Random(1);
-            _lines = _lines.OrderBy(x => rng.Next()).ToList();
-        }
-
-        private double[,] _parse()
-        {
-            string[] firstLine = _lines[0].Split(',');
-            double[,] result = new double[_lines.Count, firstLine.Length];
-
-            for (int i = 0; i < _lines.Count; i++)
-            {
-                string line = _lines[i];
-                string[] strings = line.Split(',');
-
-                result[i, 0] = double.Parse(strings[0]);
-                result[i, 1] = double.Parse(strings[1]);
-                result[i, 2] = double.Parse(strings[2]);
-                result[i, 3] = double.Parse(strings[3]);
-
-                switch (strings[4])
-                {
-                    case "Iris-setosa":
-                        result[i, 4] = 0.0001;
-                        break;
-                    case "Iris-versicolor":
-                        result[i, 4] = 0.5555;
-                        break;
-                    case "Iris-virginica":
-                        result[i, 4] = 0.9999;
-                        break;
-                }
-            }
-
-            //for (int i = 0; i < _lines.Count; i++)
-            //{
-            //    for (int j = 0; j < 4; j++)
-            //    {
-            //        result[i, j] = result[i, j]/10;
-            //    }
-            //}
-
-            return result;
         }
     }
 }

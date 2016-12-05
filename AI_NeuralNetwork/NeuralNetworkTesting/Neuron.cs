@@ -57,7 +57,11 @@ namespace NeuralNetworkTesting
                 }
                 m_output += m_bias.Weight;
 
-                m_output = Sigmoid(m_output);
+
+                //TOUCHED HERE 
+
+                //m_output = Sigmoid(m_output);
+                m_output = BipolarSigmoid(m_output);
             }
         }
 
@@ -108,6 +112,12 @@ namespace NeuralNetworkTesting
             return 1 / (1 + Math.Exp(-value));
         }
 
+
+
+        public static double BipolarSigmoid(double value)
+        {
+            return 2 / (1 + Math.Exp(-2 * value)) - 1;
+        }
         #endregion
     }
 }
