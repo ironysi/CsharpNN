@@ -21,6 +21,7 @@ namespace NNConsole
                 Console.WriteLine("Please select which Neural Network you want to run.\n");
                 Console.WriteLine("1.\tIris NN");
                 Console.WriteLine("2.\tBreast Cancer NN");
+                Console.WriteLine("3.\tWine");
 
                 int.TryParse(Console.ReadLine(), out c);
 
@@ -32,6 +33,9 @@ namespace NNConsole
                     case 2:
                         p.RunBCancer();
                         break;
+                    case 3:
+                        p.RunWine();
+                        break;
                     default:
                         Console.WriteLine("Pick a number...");
                         break;
@@ -41,6 +45,20 @@ namespace NNConsole
                 Console.Clear();
             }
         }
+        private void RunWine()
+        {
+            string[] columnTypes =
+            {
+                "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric",
+                "numeric", "numeric", "numeric"
+            };
+
+            Data data = new Data("winequality-red.csv",';', 11, 1, 0.8, columnTypes);
+            NeuralNet net = new NeuralNet(11, 11, 1, 0.01);
+
+            RunUntilDesiredError(0.01, 5, data, net);
+        }
+
 
         private void RunBCancer()
         {
@@ -53,8 +71,8 @@ namespace NNConsole
             };
             int[] outputColumns = { 1 };
             int[] ignoredColumns = { 0 };
-
-            Data data = new Data("Breasts.txt", 30, 1, 0.8, columnTypes, outputColumns, ignoredColumns);
+           
+            Data data = new Data("Breasts.txt",',', 30, 1, 0.8, columnTypes, outputColumns, ignoredColumns);
             NeuralNet net = new NeuralNet(30, 30, 1, 0.005);
 
             RunUntilDesiredError(0.01, 5, data, net);
@@ -62,7 +80,7 @@ namespace NNConsole
         private void RunIris()
         {
             string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
-            Data data = new Data("Iris.txt", 4, 3, 0.8, categories);
+            Data data = new Data("Iris.txt",',', 4, 3, 0.8, categories);
             NeuralNet net = new NeuralNet(4, 4, 3, 0.01);
 
             RunUntilDesiredError(0.5, 50, data, net);
@@ -84,11 +102,11 @@ namespace NNConsole
                 }
 
                 Console.BackgroundColor = ConsoleColor.Red;
-                Console.WriteLine("***************--------------------END OF ITERATION--------------------***************");
+                Console.WriteLine("***************--------------------END OF 10 ITERATION--------------------***************");
                 Console.ResetColor();
             } while (error > desiredError);
 
-            Console.WriteLine("\nError:{0}\t\t Iterations:{1}", error, i*10);
+            Console.WriteLine("\nError:{0}\t\t Iterations:{1}", error, i * 10);
             Console.WriteLine("************FINISHED************");
             Console.ReadLine();
         }

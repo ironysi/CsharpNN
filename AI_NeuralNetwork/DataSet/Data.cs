@@ -21,9 +21,9 @@ namespace MyDataSet
         public Matrix<double> TrainingInputs { get; set; }
 
 
-        public Data(string fileName, int inputColumnsCount, int outputColumnsCount, double percentage, string[] columnTypes, int[] outputColumns = null, int[] ignoredColumns = null)
+        public Data(string fileName,char splitOn, int inputColumnsCount, int outputColumnsCount, double percentage, string[] columnTypes, int[] outputColumns = null, int[] ignoredColumns = null)
         {
-            _allData = _fillData(columnTypes, fileName, outputColumns, ignoredColumns);
+            _allData = _fillData(columnTypes, fileName,splitOn, outputColumns, ignoredColumns);
             _percentage = percentage;
 
             _inputs = _allData.SubMatrix(0, _allData.RowCount, 0, inputColumnsCount);
@@ -32,9 +32,9 @@ namespace MyDataSet
             DivideIntoTestingAndTrainingSet();
         }
 
-        private Matrix<double> _fillData(string[] columnTypes, string fileName, int[] outputColumns, int[] ignoredColumns)
+        private Matrix<double> _fillData(string[] columnTypes, string fileName,char splitOn, int[] outputColumns, int[] ignoredColumns)
         {
-            string[][] lines = _readLines(fileName);
+            string[][] lines = _readLines(fileName,splitOn);
            
             Standardizer standardizer = new Standardizer(lines, columnTypes, outputColumns, ignoredColumns);
             double[][] dataJaggged = standardizer.StandardizeAll(lines);
@@ -43,32 +43,18 @@ namespace MyDataSet
             return result;
         }
 
-        private Matrix<double> _fillTrainingData(Matrix<double> allData, double percentage)
-        {
-            int trainingRowCount = (int)(percentage * allData.RowCount);
-            Matrix<double> result = allData.SubMatrix(0, trainingRowCount, 0,
-                allData.ColumnCount);
-            return result;
-        }
 
-        private Matrix<double> _fillTestingData(Matrix<double> allData, double percentage)
-        {
-            int testingRowCount = (int)(percentage * allData.RowCount);
-            Matrix<double> result = allData.SubMatrix(testingRowCount, allData.RowCount - testingRowCount, 0, allData.ColumnCount);
-            return result;
-        }
-
-        private static string[][] _readLines(string fileName)
+        private static string[][] _readLines(string fileName, char splitOn)
         {
             string[] allLines = File.ReadAllLines($"../../../DataSet/Data/{fileName}");
-
+                
             Random rng = new Random(1);
             allLines = allLines.OrderBy(x => rng.Next()).ToArray();
 
             string[][] lines = new string[allLines.Length][];
             for (int i = 0; i < allLines.Length; i++)
             {
-                lines[i] = allLines[i].Split(',');
+                lines[i] = allLines[i].Split(splitOn);
             }
             return lines;
         }
