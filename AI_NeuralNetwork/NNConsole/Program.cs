@@ -83,7 +83,7 @@ namespace NNConsole
             Data data = new Data("Iris.txt",',', 4, 3, 0.8, categories);
             NeuralNet net = new NeuralNet(4, 4, 3, 0.01);
 
-            RunUntilDesiredError(0.5, 50, data, net);
+            RunUntilDesiredError(0.1, 50, data, net);
         }
         private void RunUntilDesiredError(double desiredError, int printErrorEveryXIterations, Data data, NeuralNet net)
         {
@@ -101,9 +101,9 @@ namespace NNConsole
                     Console.WriteLine(error);
                 }
 
-                Console.BackgroundColor = ConsoleColor.Red;
-                Console.WriteLine("***************--------------------END OF 10 ITERATION--------------------***************");
-                Console.ResetColor();
+                //Console.BackgroundColor = ConsoleColor.Red;
+                //Console.WriteLine("***************--------------------END OF 10 ITERATION--------------------***************");
+                //Console.ResetColor();
             } while (error > desiredError);
 
             Console.WriteLine("\nError:{0}\t\t Iterations:{1}", error, i * 10);
@@ -126,29 +126,29 @@ namespace NNConsole
                 }
 
                 net.Pulse();
-                error[i] = trainingOutputs[i][0] - net.OutputLayer[0].Output;
+                error[i] = Math.Abs(trainingOutputs[i][0] - net.OutputLayer[0].Output);
 
-                if (error[i] < -0.3)
-                {
+                //if (error[i] > 0.3)
+                //{
 
-                    for (int k = 0; k < trainingOutputs[i].Length; k++)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Blue;
-                        Console.WriteLine(trainingOutputs[i][k] + "\t\t\t" + net.OutputLayer[0].Output + "\t" + error[i]);
-                        Console.ResetColor();
-                    }
+                //    for (int k = 0; k < trainingOutputs[i].Length; k++)
+                //    {
+                //        Console.BackgroundColor = ConsoleColor.Blue;
+                //        Console.WriteLine(trainingOutputs[i][k] + "\t\t\t" + net.OutputLayer[0].Output + "\t" + error[i]);
+                //        Console.ResetColor();
+                //    }
 
-                }
-                else
-                {
-                    for (int k = 0; k < trainingInputs[i].Length; k++)
-                    {
-                        Console.WriteLine(trainingOutputs[i][0] + "\t\t\t" + net.OutputLayer[0].Output + "\t" + error[i]);
-                    }
-                }
+                //}
+                //else
+                //{
+                //    for (int k = 0; k < trainingInputs[i].Length; k++)
+                //    {
+                //        Console.WriteLine(trainingOutputs[i][0] + "\t\t\t" + net.OutputLayer[0].Output + "\t" + error[i]);
+                //    }
+                //}
             }
 
-            double bad = error.Where(x => x < -0.3).Count();
+            double bad = error.Where(x => x > 0.3).Count();
             double percentage = (bad / error.Length) * 100;
 
             return percentage;
