@@ -10,17 +10,18 @@ namespace NeuralNetworkTesting
         private INeuralLayer inputLayer = new NeuralLayer();
         private INeuralLayer outputLayer = new NeuralLayer();
         private INeuralLayer hiddenLayer = new NeuralLayer();
+        private Neuron.ActFunction activationFunction;
 
         public INeuralLayer InputLayer => inputLayer;
         public INeuralLayer HiddenLayer => hiddenLayer;
         public INeuralLayer OutputLayer => outputLayer;
         public double LearningRate { get; set; }
 
-        public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate)
+        public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate, Neuron.ActFunction actFunction)
         {
             Random rand = new Random(1);
             LearningRate = learningRate;
-
+            activationFunction = actFunction;
 
             for (int i = 0; i < inputNeuronCount; i++)
                 inputLayer.Add(new Neuron(0));
@@ -29,7 +30,7 @@ namespace NeuralNetworkTesting
                 outputLayer.Add(new Neuron(rand.NextDouble()));
 
             for (int i = 0; i < hiddenNeuronCount; i++)
-                hiddenLayer.Add(new Neuron(rand.NextDouble()));
+                hiddenLayer.Add(new Neuron(rand.NextDouble(), activationFunction));
 
             // wire-up input layer to hidden layer
             for (int i = 0; i < hiddenLayer.Count; i++)
@@ -79,7 +80,7 @@ namespace NeuralNetworkTesting
 
                     for (int j = 0; j < inputs.Length; j++)
                         BackPropogation_TrainingSession(this, inputs[j], outputs[j]);
-                  
+
                     ApplyLearning(); // apply batch of cumlutive weight changes
                 }
             }
@@ -91,14 +92,14 @@ namespace NeuralNetworkTesting
             {
                 for (int i = 0; i < inputs.Length; i++)
                 {
-                      InitializeLearning(); // set all weight changes to zero
+                    InitializeLearning(); // set all weight changes to zero
 
                     for (int j = 0; j < inputs.Length; j++)
                     {
                         BackPropogation_TrainingSession(this, inputs[j], outputs[j]);
 
                     }
-                       ApplyLearning(); // apply batch of cumlutive weight changes
+                    ApplyLearning(); // apply batch of cumlutive weight changes
                 }
             }
         }

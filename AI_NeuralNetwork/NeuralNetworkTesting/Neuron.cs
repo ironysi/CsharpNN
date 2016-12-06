@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ActivationFunctions;
 
 namespace NeuralNetworkTesting
 {
@@ -7,11 +8,16 @@ namespace NeuralNetworkTesting
     {
         #region Constructors
 
-        public Neuron(double bias)
+        public Neuron(double bias, ActFunction actFunction)
         {
             m_bias = new NeuralFactor(bias);
             m_error = 0;
             m_input = new Dictionary<INeuronSignal, NeuralFactor>();
+            _activationFunction = actFunction;
+        }
+
+        public Neuron(double bias) : this(bias, ActFunc.Sigmoid)
+        {
         }
 
         #endregion
@@ -21,7 +27,8 @@ namespace NeuralNetworkTesting
         private Dictionary<INeuronSignal, NeuralFactor> m_input;
         double m_output, m_error, m_lastError;
         NeuralFactor m_bias;
-
+        public delegate double ActFunction(double value);
+        private ActFunction _activationFunction;
         #endregion
 
         #region INeuronSignal Members
@@ -57,11 +64,7 @@ namespace NeuralNetworkTesting
                 }
                 m_output += m_bias.Weight;
 
-
-                //TOUCHED HERE 
-
-                //m_output = Sigmoid(m_output);
-                m_output = BipolarSigmoid(m_output);
+                m_output = _activationFunction(m_output);
             }
         }
 
@@ -105,19 +108,5 @@ namespace NeuralNetworkTesting
 
         #endregion
 
-        #region Private Static Utility Methods
-
-        public static double Sigmoid(double value)
-        {
-            return 1 / (1 + Math.Exp(-value));
-        }
-
-
-
-        public static double BipolarSigmoid(double value)
-        {
-            return 2 / (1 + Math.Exp(-2 * value)) - 1;
-        }
-        #endregion
     }
 }
