@@ -30,6 +30,10 @@ namespace MyDataSet
             _outputs = _allData.SubMatrix(0, _allData.RowCount, inputColumnsCount, outputColumnsCount);
 
             DivideIntoTestingAndTrainingSet();
+
+
+            Console.WriteLine(_inputs.ToMatrixString());
+            Console.WriteLine(_outputs.ToMatrixString());
         }
 
         private Matrix<double> _fillData(string[] columnTypes, string fileName,char splitOn, int[] outputColumns, int[] ignoredColumns)
@@ -77,10 +81,6 @@ namespace MyDataSet
                 throw new InvalidOperationException("The given jagged array is not rectangular.");
             }
         }
-
-
-
-
 
         public void DivideIntoTestingAndTrainingSet()
         {

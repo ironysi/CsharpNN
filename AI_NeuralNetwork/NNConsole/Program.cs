@@ -54,8 +54,8 @@ namespace NNConsole
                 "numeric", "numeric", "numeric"
             };
 
-            Data data = new Data("winequality-red.csv",';', 11, 1, 0.8, columnTypes);
-            NeuralNet net = new NeuralNet(11, 11, 1, 0.01,ActFunc.Sigmoid);
+            Data data = new Data("winequality-red.csv", ';', 11, 1, 0.8, columnTypes);
+            NeuralNet net = new NeuralNet(11, 11, 1, 0.01, ActFunc.Sigmoid);
 
             RunUntilDesiredError(0.01, 5, data, net);
         }
@@ -72,17 +72,17 @@ namespace NNConsole
             };
             int[] outputColumns = { 1 };
             int[] ignoredColumns = { 0 };
-           
-            Data data = new Data("Breasts.txt",',', 30, 1, 0.8, columnTypes, outputColumns, ignoredColumns);
-            NeuralNet net = new NeuralNet(30, 30, 1, 0.005,ActFunc.BipolarSigmoid);
+
+            Data data = new Data("Breasts.txt", ',', 30, 1, 0.8, columnTypes, outputColumns, ignoredColumns);
+            NeuralNet net = new NeuralNet(30, 30, 1, 0.005, ActFunc.BipolarSigmoid);
 
             RunUntilDesiredError(0.01, 5, data, net);
         }
         private void RunIris()
         {
             string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
-            Data data = new Data("Iris.txt",',', 4, 3, 0.8, categories);
-            NeuralNet net = new NeuralNet(4, 4, 3, 0.01,ActFunc.Sigmoid);
+            Data data = new Data("Iris.txt", ',', 4, 3, 0.8, categories);
+            NeuralNet net = new NeuralNet(4, 4, 3, 0.1, ActFunc.BipolarSigmoid);
 
             RunUntilDesiredError(0.1, 50, data, net);
         }
@@ -93,7 +93,7 @@ namespace NNConsole
 
             do
             {
-                net.Train(data.LearningInputs.ToRowArrays(), data.LearningInputs.ToRowArrays(), 10);
+                net.Train(data.LearningInputs.ToRowArrays(), data.LearningInputs.ToRowArrays(), 1000);
                 error = TestNetwork(net, data.TrainingInputs.ToRowArrays(), data.TrainingOutputs.ToRowArrays());
                 i++;
 
@@ -114,44 +114,42 @@ namespace NNConsole
 
 
 
-        private double TestNetwork(INeuralNet net, double[][] trainingInputs, double[][] trainingOutputs)
+        private double TestNetwork(INeuralNet net, double[][] trainingInputs, double[][] desiredOutputs)
         {
             double[] error = new double[trainingInputs.Length];
 
-
+            // train with all input lines separately
             for (int i = 0; i < trainingInputs.Length; i++)
             {
+                double[] input = trainingInputs[i];
                 for (int j = 0; j < trainingInputs[0].Length; j++)
                 {
-                    net.InputLayer[j].Output = trainingInputs[i][j];
+                    net.InputLayer[j].Output = input[j];
+                }
+                net.Pulse();
+
+                // fill in error values
+                for (int k = 0; k < desiredOutputs[i].Length; k++)
+                {
+                    error[i] = Math.Abs(desiredOutputs[i][k] - net.OutputLayer[k].Output);
+                    if (error[i] > 0.3)
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                    }
+                    else
+                    {
+                        Console.ResetColor();
+                    }
+                    Console.WriteLine("Desired output: " + desiredOutputs[i][k] + "\t" + "Guessed output: " + net.OutputLayer[k].Output + "\t" + "Difference: " + error[i]);
                 }
 
-                net.Pulse();
-                error[i] = Math.Abs(trainingOutputs[i][0] - net.OutputLayer[0].Output);
-
-                //if (error[i] > 0.3)
-                //{
-
-                //    for (int k = 0; k < trainingOutputs[i].Length; k++)
-                //    {
-                //        Console.BackgroundColor = ConsoleColor.Blue;
-                //        Console.WriteLine(trainingOutputs[i][k] + "\t\t\t" + net.OutputLayer[0].Output + "\t" + error[i]);
-                //        Console.ResetColor();
-                //    }
-
-                //}
-                //else
-                //{
-                //    for (int k = 0; k < trainingInputs[i].Length; k++)
-                //    {
-                //        Console.WriteLine(trainingOutputs[i][0] + "\t\t\t" + net.OutputLayer[0].Output + "\t" + error[i]);
-                //    }
-                //}
             }
+
+
+
 
             double bad = error.Where(x => x > 0.3).Count();
             double percentage = (bad / error.Length) * 100;
-
             return percentage;
         }
     }
