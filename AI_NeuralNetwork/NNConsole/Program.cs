@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using ActivationFunctions;
 using MyDataSet;
 using NeuralNetworkTesting;
 
@@ -54,7 +55,7 @@ namespace NNConsole
             };
 
             Data data = new Data("winequality-red.csv",';', 11, 1, 0.8, columnTypes);
-            NeuralNet net = new NeuralNet(11, 11, 1, 0.01);
+            NeuralNet net = new NeuralNet(11, 11, 1, 0.01,ActFunc.Sigmoid);
 
             RunUntilDesiredError(0.01, 5, data, net);
         }
@@ -73,7 +74,7 @@ namespace NNConsole
             int[] ignoredColumns = { 0 };
            
             Data data = new Data("Breasts.txt",',', 30, 1, 0.8, columnTypes, outputColumns, ignoredColumns);
-            NeuralNet net = new NeuralNet(30, 30, 1, 0.005);
+            NeuralNet net = new NeuralNet(30, 30, 1, 0.005,ActFunc.BipolarSigmoid);
 
             RunUntilDesiredError(0.01, 5, data, net);
         }
@@ -81,7 +82,7 @@ namespace NNConsole
         {
             string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
             Data data = new Data("Iris.txt",',', 4, 3, 0.8, categories);
-            NeuralNet net = new NeuralNet(4, 4, 3, 0.01);
+            NeuralNet net = new NeuralNet(4, 4, 3, 0.01,ActFunc.Sigmoid);
 
             RunUntilDesiredError(0.1, 50, data, net);
         }
