@@ -82,12 +82,13 @@ namespace NNConsole
                 {
                     Console.WriteLine(error);
                 }
+
                 Console.BackgroundColor = ConsoleColor.Red;
                 Console.WriteLine("***************--------------------END OF ITERATION--------------------***************");
                 Console.ResetColor();
             } while (error > desiredError);
 
-            Console.WriteLine("\nError:{0}\t\t Iterations:{1}", error, i);
+            Console.WriteLine("\nError:{0}\t\t Iterations:{1}", error, i*10);
             Console.WriteLine("************FINISHED************");
             Console.ReadLine();
         }
