@@ -49,6 +49,7 @@
     <Compile Include="Standardizer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\AND.txt" />
     <Content Include="Data\Breasts.txt" />
     <Content Include="Data\Iris.txt" />
   </ItemGroup>

@@ -21,7 +21,7 @@ namespace NNConsole
                 Console.WriteLine("Please select which Neural Network you want to run.\n");
                 Console.WriteLine("1.\tIris NN");
                 Console.WriteLine("2.\tBreast Cancer NN");
-                Console.WriteLine("3.\tWine");
+                Console.WriteLine("3.\tAND Gate");
 
                 int.TryParse(Console.ReadLine(), out c);
 
@@ -34,7 +34,10 @@ namespace NNConsole
                         p.RunBCancer();
                         break;
                     case 3:
-                        p.RunWine();
+                        p.RunANDGate();
+                        break;
+                    case 4:
+                        p.RunANDGate();
                         break;
                     default:
                         Console.WriteLine("Pick a number...");
@@ -85,6 +88,17 @@ namespace NNConsole
 
             RunUntilDesiredError(0.1, 50, data, net);
         }
+
+        private void RunANDGate()
+        {
+            string[] categories = { "numeric", "numeric", "categorical"};
+            Data data = new Data("AND.txt", ',', 2, 2, 0.8, categories);
+            NeuralNet net = new NeuralNet(2, 2, 2, 0.1);
+
+            RunUntilDesiredError(0.1, 50, data, net);
+        }
+
+
         private void RunUntilDesiredError(double desiredError, int printErrorEveryXIterations, Data data, NeuralNet net)
         {
             double error;
@@ -127,6 +141,15 @@ namespace NNConsole
 
                 net.Pulse();
                 error[i] = Math.Abs(trainingOutputs[i][0] - net.OutputLayer[0].Output);
+                //IRIS
+                //Console.WriteLine("INPUT LAYER: {0}\t{1}\t{2}\t{3}", net.InputLayer[0].Output, net.InputLayer[1].Output, net.InputLayer[2].Output, net.InputLayer[3].Output);
+                //Console.WriteLine("SUPPOSED TO BE: {0}\t{1}\t{2}", trainingOutputs[i][0], trainingOutputs[i][1], trainingOutputs[i][2]);
+                //Console.WriteLine("OUTPUT LAYER: {0}\t{1}\t{2}\tERROR: {3}\t{4}\t{5}",net.OutputLayer[0].Output, net.OutputLayer[1].Output, net.OutputLayer[2].Output,net.OutputLayer[0].Error, net.OutputLayer[1].Error,net.OutputLayer[2].Error);
+
+                //AND
+                Console.WriteLine("INPUT LAYER: {0}\t{1}", net.InputLayer[0].Output, net.InputLayer[1].Output);
+                Console.WriteLine("OUTPUT LAYER: {0}\t{1}\tERROR: {2}\t{3}",net.OutputLayer[0].Output, net.OutputLayer[1].Output,net.OutputLayer[0].Error, net.OutputLayer[1].Error);
+
 
                 //if (error[i] > 0.3)
                 //{
@@ -134,18 +157,20 @@ namespace NNConsole
                 //    for (int k = 0; k < trainingOutputs[i].Length; k++)
                 //    {
                 //        Console.BackgroundColor = ConsoleColor.Blue;
-                //        Console.WriteLine(trainingOutputs[i][k] + "\t\t\t" + net.OutputLayer[0].Output + "\t" + error[i]);
+                //        Console.WriteLine(trainingOutputs[i][k] + "\t\t\t" + net.OutputLayer[k].Output + "\t" + net.OutputLayer[k].Error);
                 //        Console.ResetColor();
                 //    }
 
                 //}
                 //else
                 //{
-                //    for (int k = 0; k < trainingInputs[i].Length; k++)
+                //    for (int k = 0; k < trainingOutputs[i].Length; k++)
                 //    {
-                //        Console.WriteLine(trainingOutputs[i][0] + "\t\t\t" + net.OutputLayer[0].Output + "\t" + error[i]);
+                //        Console.WriteLine(trainingOutputs[i][k] + "\t\t\t" + net.OutputLayer[k].Output + "\t" + net.OutputLayer[k].Error);
+                //        Console.WriteLine(trainingOutputs[i][k] + "\t\t\t" + net.OutputLayer[k].Output + "\t" + error[i]);
                 //    }
                 //}
+                Console.ReadLine();
             }
 
             double bad = error.Where(x => x > 0.3).Count();
