@@ -49,8 +49,8 @@ namespace NeuralNetworkTesting
 
                 //ACT Function is HERE 
 
-                    m_output = Sigmoid(m_output);
-              //  m_output = TanH(m_output);
+                m_output = Sigmoid(m_output);
+                //  m_output = TanH(m_output);
                 //     m_output = BipolarSigmoid(m_output);
             }
         }
@@ -62,7 +62,7 @@ namespace NeuralNetworkTesting
         }
 
 
-        public double OutputError { get; set;}
+        public double OutputError { get; set; }
         public double Error
         {
             get { return m_error; }

@@ -33,7 +33,7 @@ namespace NeuralNetworkTesting
                 inputLayer.Add(new Neuron(0));
 
             for (int i = 0; i < outputNeuronCount; i++)
-                outputLayer.Add(new Neuron(Utilities.DoubleBetween(minRange,maxRange)));
+                outputLayer.Add(new Neuron(Utilities.DoubleBetween(minRange, maxRange)));
 
             for (int i = 0; i < hiddenNeuronCount; i++)
                 hiddenLayer.Add(new Neuron(Utilities.DoubleBetween(minRange, maxRange)));
@@ -151,7 +151,7 @@ namespace NeuralNetworkTesting
                     outputNode = net.outputLayer[j];
                     error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * SigmoidDerivative(temp);// *(1.0F - temp);                   
                 }
-                
+
                 hiddenNode.Error = error;
             }
         }
@@ -170,13 +170,13 @@ namespace NeuralNetworkTesting
 
         public static void CalculateAndAppendTransformation(NeuralNet net)
         {
-            INeuron outputNode, inputNode, hiddenNode;
+            INeuron hiddenNode;
 
 
             // adjust output layer weight change
             for (int j = 0; j < net.outputLayer.Count; j++)
             {
-                outputNode = net.outputLayer[j];
+                var outputNode = net.outputLayer[j];
 
                 for (int i = 0; i < net.hiddenLayer.Count; i++)
                 {
@@ -194,7 +194,7 @@ namespace NeuralNetworkTesting
 
                 for (int i = 0; i < net.inputLayer.Count; i++)
                 {
-                    inputNode = net.inputLayer[i];
+                    var inputNode = net.inputLayer[i];
                     hiddenNode.Input[inputNode].H_Vector += hiddenNode.Error * inputNode.Output;
                 }
 
