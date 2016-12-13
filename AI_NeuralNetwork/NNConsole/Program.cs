@@ -35,6 +35,7 @@ namespace NNConsole
                         p.RunANDGate();
                         break;
                     case 4:
+                        p.RunWine();
                         break;
                     default:
                         Console.WriteLine("Pick a number...");
@@ -47,16 +48,16 @@ namespace NNConsole
         }
         private void RunWine()
         {
-            string[] columnTypes =
+            string[] categories =
             {
-                "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric",
-                "numeric", "numeric", "numeric"
+                "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric","numeric",
+                "numeric", "numeric"
             };
 
-            Data data = new Data("winequality-red.csv", ';', 11, 1, 0.8, columnTypes);
-            NeuralNet net = new NeuralNet(11, 11, 1, 0.01);
+            Data data = new Data("winequality-red.csv", ';', 11, 1, 0.8, categories);
+            NeuralNet net = new NeuralNet(11, 11, 1, 0.1);
 
-            RunUntilDesiredError(0.01, 5, data, net);
+            RunUntilDesiredError(0.1, 5, data, net);
         }
 
 
@@ -73,9 +74,9 @@ namespace NNConsole
             int[] ignoredColumns = { 0 };
 
             Data data = new Data("Breasts.txt", ',', 30, 1, 0.8, columnTypes, outputColumns, ignoredColumns);
-            NeuralNet net = new NeuralNet(30, 30, 1, 0.05);
+            NeuralNet net = new NeuralNet(30, 30, 1, 0.05,-1.0,1.0);
 
-            RunUntilDesiredError(0.01, 5, data, net);
+            RunUntilDesiredError(0.001, 5, data, net);
         }
         private void RunIris()
         {
@@ -154,7 +155,7 @@ namespace NNConsole
                 ////AND
                 ////Console.WriteLine("INPUT LAYER: {0}\t{1}", net.InputLayer[0].Output, net.InputLayer[1].Output);
                 //Console.WriteLine("DESIRED OUTPUT:\t{0}", trainingOutputs[i][0]);
-                //Console.WriteLine("OUTPUT LAYER: {0}\tERROR: {1}", net.OutputLayer[0].Output, net.OutputLayer[0].Error);
+                //Console.WriteLine("OUTPUT LAYER: {0}\t\tERROR: {1}", net.OutputLayer[0].Output, net.OutputLayer[0].OutputError);
 
                 //  BREAST
                 //Console.WriteLine("DESIRED OUTPUT:\t{0}\t{1}", trainingOutputs[i][0], trainingOutputs[i][1]);

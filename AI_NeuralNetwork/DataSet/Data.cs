@@ -49,6 +49,8 @@ namespace MyDataSet
             string[] allLines = File.ReadAllLines($"../../../DataSet/Data/{fileName}");
 
             Random rng = new Random(1);
+
+            //Shuffle
             allLines = allLines.OrderBy(x => rng.Next()).ToArray();
 
             string[][] lines = new string[allLines.Length][];

@@ -55,10 +55,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ActivationFunctions\ActivationFunctions.csproj">
-      <Project>{26977387-40B3-493D-9633-32C63B734200}</Project>
-      <Name>ActivationFunctions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DataSet\Data.csproj">
       <Project>{7423FB0A-6130-43E7-9377-7D6EA3BCF02E}</Project>
       <Name>Data</Name>

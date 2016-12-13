@@ -6,20 +6,16 @@ namespace NeuralNetworkTesting
 {
     public class NeuralLayer : INeuralLayer
     {
-        #region Constructor
 
         public NeuralLayer()
         {
             m_neurons = new List<INeuron>();
         }
 
-        #endregion
 
-        #region Member Variables
 
         private List<INeuron> m_neurons;
 
-        #endregion
 
         #region IList<INeuron> Members
 

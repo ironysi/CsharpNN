@@ -54,6 +54,7 @@
     <Content Include="Data\Iris.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\winequality-red.csv" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
