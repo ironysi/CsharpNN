@@ -10,5 +10,6 @@ namespace NeuralNetworkTesting
 
         double Error { get; set; }
         double LastError { get; set; }
+        double OutputError { get; set; }
     }
 }

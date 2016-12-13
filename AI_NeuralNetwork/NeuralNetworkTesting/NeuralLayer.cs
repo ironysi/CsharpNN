@@ -85,23 +85,18 @@ namespace NeuralNetworkTesting
 
         #endregion
 
-        #region IEnumerable<INeuron> Members
-
         public IEnumerator<INeuron> GetEnumerator()
         {
             return m_neurons.GetEnumerator();
         }
 
-        #endregion
 
-        #region IEnumerable Members
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        #endregion
 
         #region INeuralLayer Members
 

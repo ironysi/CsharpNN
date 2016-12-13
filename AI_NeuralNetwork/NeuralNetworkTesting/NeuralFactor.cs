@@ -35,7 +35,7 @@ namespace NeuralNetworkTesting
         public double Last_H_Vector
         {
             get { return m_lastDelta; }
-            //set { m_lastDelta = value; }
+            set { m_lastDelta = value; }
         }
 
         #endregion

@@ -5,7 +5,6 @@ namespace NeuralNetworkTesting
 {
     public class Neuron : INeuron
     {
-        #region Constructors
 
         public Neuron(double bias)
         {
@@ -14,17 +13,12 @@ namespace NeuralNetworkTesting
             m_input = new Dictionary<INeuronSignal, NeuralFactor>();
         }
 
-        #endregion
 
-        #region Member Variables
 
         private Dictionary<INeuronSignal, NeuralFactor> m_input;
         double m_output, m_error, m_lastError;
         NeuralFactor m_bias;
 
-        #endregion
-
-        #region INeuronSignal Members
 
         public double Output
         {
@@ -32,18 +26,13 @@ namespace NeuralNetworkTesting
             set { m_output = value; }
         }
 
-        #endregion
 
-        #region INeuronReceptor Members
 
         public Dictionary<INeuronSignal, NeuralFactor> Input
         {
             get { return m_input; }
         }
 
-        #endregion
-
-        #region INeuron Members
 
         public void Pulse(INeuralLayer layer)
         {
@@ -58,10 +47,11 @@ namespace NeuralNetworkTesting
                 m_output += m_bias.Weight;
 
 
-                //TOUCHED HERE 
+                //ACT Function is HERE 
 
-                //m_output = Sigmoid(m_output);
-                m_output = BipolarSigmoid(m_output);
+                    m_output = Sigmoid(m_output);
+              //  m_output = TanH(m_output);
+                //     m_output = BipolarSigmoid(m_output);
             }
         }
 
@@ -71,6 +61,8 @@ namespace NeuralNetworkTesting
             set { m_bias = value; }
         }
 
+
+        public double OutputError { get; set;}
         public double Error
         {
             get { return m_error; }
@@ -103,9 +95,6 @@ namespace NeuralNetworkTesting
             set { m_lastError = value; }
         }
 
-        #endregion
-
-        #region Private Static Utility Methods
 
         public static double Sigmoid(double value)
         {
@@ -113,11 +102,20 @@ namespace NeuralNetworkTesting
         }
 
 
-
+        /// <summary>
+        /// !!! NOT SURE ABOUT THIS !!!
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static double BipolarSigmoid(double value)
         {
             return 2 / (1 + Math.Exp(-2 * value)) - 1;
         }
-        #endregion
+
+        public static double TanH(double value)
+        {
+            return Math.Tanh(value);
+        }
+
     }
 }

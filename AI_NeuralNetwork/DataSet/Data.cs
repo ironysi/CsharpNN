@@ -78,10 +78,6 @@ namespace MyDataSet
             }
         }
 
-
-
-
-
         public void DivideIntoTestingAndTrainingSet()
         {
             int trainingInputsCount = (int)(_percentage * _inputs.RowCount);
