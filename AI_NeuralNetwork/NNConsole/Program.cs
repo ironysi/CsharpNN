@@ -13,8 +13,6 @@ namespace NNConsole
             Program p = new Program();
 
             int c;
-            Random rand = new Random();
-
             while (true)
             {
                 Console.WriteLine(@"******** Welcome! ********");
@@ -158,7 +156,7 @@ namespace NNConsole
                 //Console.WriteLine("DESIRED OUTPUT:\t{0}", trainingOutputs[i][0]);
                 //Console.WriteLine("OUTPUT LAYER: {0}\tERROR: {1}", net.OutputLayer[0].Output, net.OutputLayer[0].Error);
 
-              //  BREAST
+                //  BREAST
                 //Console.WriteLine("DESIRED OUTPUT:\t{0}\t{1}", trainingOutputs[i][0], trainingOutputs[i][1]);
                 //Console.WriteLine("OUTPUT LAYER: {0}\t\t{1}ERROR: {2}\t\t{3}", net.OutputLayer[0].Output, net.OutputLayer[1].Output,
                 //                                                               net.OutputLayer[0].Error, net.OutputLayer[1].Error);

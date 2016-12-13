@@ -21,25 +21,21 @@ namespace MyDataSet
         public Matrix<double> TrainingInputs { get; set; }
 
 
-        public Data(string fileName,char splitOn, int inputColumnsCount, int outputColumnsCount, double percentage, string[] columnTypes, int[] outputColumns = null, int[] ignoredColumns = null)
+        public Data(string fileName, char splitOn, int inputColumnsCount, int outputColumnsCount, double percentage, string[] columnTypes, int[] outputColumns = null, int[] ignoredColumns = null)
         {
-            _allData = _fillData(columnTypes, fileName,splitOn, outputColumns, ignoredColumns);
+            _allData = _fillData(columnTypes, fileName, splitOn, outputColumns, ignoredColumns);
             _percentage = percentage;
 
             _inputs = _allData.SubMatrix(0, _allData.RowCount, 0, inputColumnsCount);
             _outputs = _allData.SubMatrix(0, _allData.RowCount, inputColumnsCount, outputColumnsCount);
 
             DivideIntoTestingAndTrainingSet();
-
-
-            Console.WriteLine(_inputs.ToMatrixString());
-            Console.WriteLine(_outputs.ToMatrixString());
         }
 
-        private Matrix<double> _fillData(string[] columnTypes, string fileName,char splitOn, int[] outputColumns, int[] ignoredColumns)
+        private Matrix<double> _fillData(string[] columnTypes, string fileName, char splitOn, int[] outputColumns, int[] ignoredColumns)
         {
-            string[][] lines = _readLines(fileName,splitOn);
-           
+            string[][] lines = _readLines(fileName, splitOn);
+
             Standardizer standardizer = new Standardizer(lines, columnTypes, outputColumns, ignoredColumns);
             double[][] dataJaggged = standardizer.StandardizeAll(lines);
             double[,] data = JaggedTo2DArray(dataJaggged);
@@ -51,7 +47,7 @@ namespace MyDataSet
         private static string[][] _readLines(string fileName, char splitOn)
         {
             string[] allLines = File.ReadAllLines($"../../../DataSet/Data/{fileName}");
-                
+
             Random rng = new Random(1);
             allLines = allLines.OrderBy(x => rng.Next()).ToArray();
 

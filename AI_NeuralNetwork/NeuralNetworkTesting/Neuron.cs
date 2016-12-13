@@ -1,22 +1,16 @@
 using System;
 using System.Collections.Generic;
-using ActivationFunctions;
 
 namespace NeuralNetworkTesting
 {
     public class Neuron : INeuron
     {
 
-        public Neuron(double bias, ActFunction actFunction)
+        public Neuron(double bias)
         {
             m_bias = new NeuralFactor(bias);
             m_error = 0;
             m_input = new Dictionary<INeuronSignal, NeuralFactor>();
-            _activationFunction = actFunction;
-        }
-
-        public Neuron(double bias) : this(bias, ActFunc.Sigmoid)
-        {
         }
 
 
@@ -24,15 +18,7 @@ namespace NeuralNetworkTesting
         private Dictionary<INeuronSignal, NeuralFactor> m_input;
         double m_output, m_error, m_lastError;
         NeuralFactor m_bias;
-<<<<<<< HEAD
 
-=======
-        public delegate double ActFunction(double value);
-        private ActFunction _activationFunction;
-        #endregion
-
-        #region INeuronSignal Members
->>>>>>> 7884e21d85bf035716557c03bc3a7d200827dcb3
 
         public double Output
         {
@@ -60,16 +46,12 @@ namespace NeuralNetworkTesting
                 }
                 m_output += m_bias.Weight;
 
-<<<<<<< HEAD
 
                 //ACT Function is HERE 
 
                 m_output = Sigmoid(m_output);
                 //  m_output = TanH(m_output);
                 //     m_output = BipolarSigmoid(m_output);
-=======
-                m_output = _activationFunction(m_output);
->>>>>>> 7884e21d85bf035716557c03bc3a7d200827dcb3
             }
         }
 
@@ -113,7 +95,6 @@ namespace NeuralNetworkTesting
             set { m_lastError = value; }
         }
 
-<<<<<<< HEAD
 
         public static double Sigmoid(double value)
         {
@@ -135,9 +116,6 @@ namespace NeuralNetworkTesting
         {
             return Math.Tanh(value);
         }
-=======
-        #endregion
->>>>>>> 7884e21d85bf035716557c03bc3a7d200827dcb3
 
     }
 }

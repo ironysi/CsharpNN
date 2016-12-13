@@ -10,14 +10,12 @@ namespace NeuralNetworkTesting
         private INeuralLayer inputLayer = new NeuralLayer();
         private INeuralLayer outputLayer = new NeuralLayer();
         private INeuralLayer hiddenLayer = new NeuralLayer();
-        private Neuron.ActFunction activationFunction;
 
         public INeuralLayer InputLayer => inputLayer;
         public INeuralLayer HiddenLayer => hiddenLayer;
         public INeuralLayer OutputLayer => outputLayer;
         public double LearningRate { get; set; }
 
-<<<<<<< HEAD
         /// <summary>
         /// Includes weight range parameter
         /// </summary>
@@ -27,7 +25,8 @@ namespace NeuralNetworkTesting
         /// <param name="learningRate"></param>
         /// <param name="minRange">Lowes value of weights</param>
         /// <param name="maxRange">Highest value of weights</param>
-        public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate, double minRange, double maxRange)
+        public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate,
+            double minRange, double maxRange)
         {
             LearningRate = learningRate;
 
@@ -42,23 +41,20 @@ namespace NeuralNetworkTesting
 
             // wire-up input layer to hidden layer
             for (int i = 0; i < hiddenLayer.Count; i++)
-                for (int j = 0; j < inputLayer.Count; j++)
-                    hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
+            for (int j = 0; j < inputLayer.Count; j++)
+                hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
 
             // wire-up output layer to hidden layer
             for (int i = 0; i < outputLayer.Count; i++)
-                for (int j = 0; j < hiddenLayer.Count; j++)
-                    outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
+            for (int j = 0; j < hiddenLayer.Count; j++)
+                outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
         }
 
         public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate)
-=======
-        public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate, Neuron.ActFunction actFunction)
->>>>>>> 7884e21d85bf035716557c03bc3a7d200827dcb3
         {
             Random rand = new Random(1);
             LearningRate = learningRate;
-            activationFunction = actFunction;
+
 
             for (int i = 0; i < inputNeuronCount; i++)
                 inputLayer.Add(new Neuron(0));
@@ -67,17 +63,17 @@ namespace NeuralNetworkTesting
                 outputLayer.Add(new Neuron(rand.NextDouble()));
 
             for (int i = 0; i < hiddenNeuronCount; i++)
-                hiddenLayer.Add(new Neuron(rand.NextDouble(), activationFunction));
+                hiddenLayer.Add(new Neuron(rand.NextDouble()));
 
             // wire-up input layer to hidden layer
             for (int i = 0; i < hiddenLayer.Count; i++)
-                for (int j = 0; j < inputLayer.Count; j++)
-                    hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(rand.NextDouble()));
+            for (int j = 0; j < inputLayer.Count; j++)
+                hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(rand.NextDouble()));
 
             // wire-up output layer to hidden layer
             for (int i = 0; i < outputLayer.Count; i++)
-                for (int j = 0; j < hiddenLayer.Count; j++)
-                    outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(rand.NextDouble()));
+            for (int j = 0; j < hiddenLayer.Count; j++)
+                outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(rand.NextDouble()));
         }
 
         public void Pulse()
@@ -117,35 +113,12 @@ namespace NeuralNetworkTesting
 
                     for (int j = 0; j < inputs.Length; j++)
                         BackPropogation_TrainingSession(this, inputs[j], outputs[j]);
-<<<<<<< HEAD
-
-=======
 
                     ApplyLearning(); // apply batch of cumlutive weight changes
                 }
             }
         }
 
-        public void Test(double[][] inputs, double[][] outputs)
-        {
-            lock (this)
-            {
-                for (int i = 0; i < inputs.Length; i++)
-                {
-                    InitializeLearning(); // set all weight changes to zero
-
-                    for (int j = 0; j < inputs.Length; j++)
-                    {
-                        BackPropogation_TrainingSession(this, inputs[j], outputs[j]);
-
-                    }
->>>>>>> 7884e21d85bf035716557c03bc3a7d200827dcb3
-                    ApplyLearning(); // apply batch of cumlutive weight changes
-                }
-            }
-        }
-
-        #region Methods
 
         public void PreparePerceptionLayerForPulse(double[] input)
         {
@@ -176,7 +149,8 @@ namespace NeuralNetworkTesting
                 for (int j = 0; j < net.outputLayer.Count; j++)
                 {
                     outputNode = net.outputLayer[j];
-                    error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * SigmoidDerivative(temp);// *(1.0F - temp);                   
+                    error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * SigmoidDerivative(temp);
+                        // *(1.0F - temp);                   
                 }
 
                 hiddenNode.Error = error;
@@ -238,6 +212,5 @@ namespace NeuralNetworkTesting
             CalculateAndAppendTransformation(net);
         }
 
-        #endregion Private Static Utility Methods -------------------------------------------
     }
 }
