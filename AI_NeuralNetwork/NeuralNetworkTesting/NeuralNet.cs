@@ -26,54 +26,50 @@ namespace NeuralNetworkTesting
         /// <param name="minRange">Lowes value of weights</param>
         /// <param name="maxRange">Highest value of weights</param>
         public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate,
-            double minRange, double maxRange)
+            double minRange = 0, double maxRange = 1)
         {
             LearningRate = learningRate;
 
             for (int i = 0; i < inputNeuronCount; i++)
                 inputLayer.Add(new Neuron(0));
+            if (minRange != 0)
+            {
+                for (int i = 0; i < outputNeuronCount; i++)
+                    outputLayer.Add(new Neuron(Utilities.DoubleBetween(minRange, maxRange)));
 
-            for (int i = 0; i < outputNeuronCount; i++)
-                outputLayer.Add(new Neuron(Utilities.DoubleBetween(minRange, maxRange)));
+                for (int i = 0; i < hiddenNeuronCount; i++)
+                    hiddenLayer.Add(new Neuron(Utilities.DoubleBetween(minRange, maxRange)));
 
-            for (int i = 0; i < hiddenNeuronCount; i++)
-                hiddenLayer.Add(new Neuron(Utilities.DoubleBetween(minRange, maxRange)));
+                // wire-up input layer to hidden layer
+                for (int i = 0; i < hiddenLayer.Count; i++)
+                    for (int j = 0; j < inputLayer.Count; j++)
+                        hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
 
-            // wire-up input layer to hidden layer
-            for (int i = 0; i < hiddenLayer.Count; i++)
-            for (int j = 0; j < inputLayer.Count; j++)
-                hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
+                // wire-up output layer to hidden layer
+                for (int i = 0; i < outputLayer.Count; i++)
+                    for (int j = 0; j < hiddenLayer.Count; j++)
+                        outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
+            }
+            else
+            {
+                Random rnd = new Random(1);
 
-            // wire-up output layer to hidden layer
-            for (int i = 0; i < outputLayer.Count; i++)
-            for (int j = 0; j < hiddenLayer.Count; j++)
-                outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
-        }
+                for (int i = 0; i < outputNeuronCount; i++)
+                    outputLayer.Add(new Neuron(rnd.NextDouble()));
 
-        public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate)
-        {
-            Random rand = new Random(1);
-            LearningRate = learningRate;
+                for (int i = 0; i < hiddenNeuronCount; i++)
+                    hiddenLayer.Add(new Neuron(rnd.NextDouble()));
 
+                // wire-up input layer to hidden layer
+                for (int i = 0; i < hiddenLayer.Count; i++)
+                    for (int j = 0; j < inputLayer.Count; j++)
+                        hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(rnd.NextDouble()));
 
-            for (int i = 0; i < inputNeuronCount; i++)
-                inputLayer.Add(new Neuron(0));
-
-            for (int i = 0; i < outputNeuronCount; i++)
-                outputLayer.Add(new Neuron(rand.NextDouble()));
-
-            for (int i = 0; i < hiddenNeuronCount; i++)
-                hiddenLayer.Add(new Neuron(rand.NextDouble()));
-
-            // wire-up input layer to hidden layer
-            for (int i = 0; i < hiddenLayer.Count; i++)
-            for (int j = 0; j < inputLayer.Count; j++)
-                hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(rand.NextDouble()));
-
-            // wire-up output layer to hidden layer
-            for (int i = 0; i < outputLayer.Count; i++)
-            for (int j = 0; j < hiddenLayer.Count; j++)
-                outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(rand.NextDouble()));
+                // wire-up output layer to hidden layer
+                for (int i = 0; i < outputLayer.Count; i++)
+                    for (int j = 0; j < hiddenLayer.Count; j++)
+                        outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(rnd.NextDouble()));
+            }
         }
 
         public void Pulse()
@@ -150,7 +146,7 @@ namespace NeuralNetworkTesting
                 {
                     outputNode = net.outputLayer[j];
                     error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * SigmoidDerivative(temp);
-                        // *(1.0F - temp);                   
+                    // *(1.0F - temp);                   
                 }
 
                 hiddenNode.Error = error;

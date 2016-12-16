@@ -82,7 +82,7 @@ namespace NNConsole
         {
             string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
             Data data = new Data("Iris.txt", ',', 4, 3, 0.8, categories);
-            NeuralNet net = new NeuralNet(4, 4, 3, 0.01);
+            NeuralNet net = new NeuralNet(4, 4, 3, 0.05);
 
             RunUntilDesiredError(0.02, 50, data, net);
         }
@@ -147,23 +147,28 @@ namespace NNConsole
                 }
                 batchError += layerError / trainingOutputs[0].Length;
 
-                ////IRIS
-                //Console.WriteLine("INPUT LAYER:\t{0}\t\t{1}\t\t{2}\t\t{3}", net.InputLayer[0].Output, net.InputLayer[1].Output, net.InputLayer[2].Output, net.InputLayer[3].Output);
-                //Console.WriteLine("DESIRED OUTPUT:\t{0}\t\t\t\t{1}\t\t\t\t{2}", trainingOutputs[i][0], trainingOutputs[i][1], trainingOutputs[i][2]);
-                //Console.WriteLine("OUTPUT LAYER:\t{0}\t\t{1}\t\t{2}\t\tERROR: {3}---{4}---{5}", net.OutputLayer[0].Output, net.OutputLayer[1].Output, net.OutputLayer[2].Output, 
-                //    net.OutputLayer[0].OutputError, net.OutputLayer[1].OutputError, net.OutputLayer[2].OutputError);
-                ////AND
-                ////Console.WriteLine("INPUT LAYER: {0}\t{1}", net.InputLayer[0].Output, net.InputLayer[1].Output);
-                //Console.WriteLine("DESIRED OUTPUT:\t{0}", trainingOutputs[i][0]);
-                //Console.WriteLine("OUTPUT LAYER: {0}\t\tERROR: {1}", net.OutputLayer[0].Output, net.OutputLayer[0].OutputError);
-
-                //  BREAST
-                //Console.WriteLine("DESIRED OUTPUT:\t{0}\t{1}", trainingOutputs[i][0], trainingOutputs[i][1]);
-                //Console.WriteLine("OUTPUT LAYER: {0}\t\t{1}ERROR: {2}\t\t{3}", net.OutputLayer[0].Output, net.OutputLayer[1].Output,
-                //                                                               net.OutputLayer[0].Error, net.OutputLayer[1].Error);
-
+            //    PrintResults(net,trainingOutputs,i);
             }
             return batchError / trainingOutputs.Length;
+        }
+
+
+        private void PrintResults(INeuralNet net, double[][] trainingOutputs, int indexI)
+        {
+            Console.Write("DESIRED OUTPUTS:\t");
+
+            for (int j = 0; j < trainingOutputs[0].Length; j++)
+            {
+                Console.Write(trainingOutputs[indexI][j] + "\t");
+            }
+            Console.Write("\n");
+
+            Console.Write("OUTPUT LAYER: \t");
+            for (int j = 0; j < trainingOutputs[0].Length; j++)
+            {
+                Console.Write(net.OutputLayer[j].Output + "\t");
+            }
+            Console.Write("\n");
         }
     }
 }
