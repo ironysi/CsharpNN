@@ -20,22 +20,26 @@ namespace NNConsole
                 Console.WriteLine("1.\tIris NN");
                 Console.WriteLine("2.\tBreast Cancer NN");
                 Console.WriteLine("3.\tAND Gate");
+                Console.WriteLine("4.\tWine NN");
 
                 int.TryParse(Console.ReadLine(), out c);
 
                 switch (c)
                 {
                     case 1:
-                        p.RunIris();
+                        p.RunIris(0.05);
                         break;
                     case 2:
-                        p.RunBCancer();
+                        p.RunBCancer(0.05, true);
                         break;
                     case 3:
-                        p.RunANDGate();
+                        p.RunANDGate(0.1);
                         break;
                     case 4:
-                        p.RunWine();
+                        p.RunWine(0.005,false);
+                        break;
+                    case 5:
+                        p.Test();
                         break;
                     default:
                         Console.WriteLine("Pick a number...");
@@ -46,22 +50,29 @@ namespace NNConsole
                 Console.Clear();
             }
         }
-        private void RunWine()
+
+        private void Test()
+        {
+            Console.WriteLine("rnd:\t" + Math.Pow(10,2));
+            Console.WriteLine("util:\t" + Utilities.DoubleBetween(0, 1));
+        }
+
+        private void RunWine(double learningRate = 0.1, bool doYouWantToPrint = false)
         {
             string[] categories =
             {
                 "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric","numeric",
-                "numeric", "numeric"
+                "numeric", "categorical"
             };
+            // Output data (quality is 6 numbers)
+            Data data = new Data("winequality-red.csv", ';', 11, 6, 0.8, categories);
+            NeuralNet net = new NeuralNet(11, 14, 6, learningRate);
 
-            Data data = new Data("winequality-red.csv", ';', 11, 1, 0.8, categories);
-            NeuralNet net = new NeuralNet(11, 11, 1, 0.1);
-
-            RunUntilDesiredError(0.1, 5, data, net);
+            RunUntilDesiredError(0.1, 10, data, net,doYouWantToPrint);
         }
 
 
-        private void RunBCancer()
+        private void RunBCancer(double learningRate = 0.05, bool doYouWantToPrint = false)
         {
             string[] columnTypes =
             {
@@ -74,30 +85,30 @@ namespace NNConsole
             int[] ignoredColumns = { 0 };
 
             Data data = new Data("Breasts.txt", ',', 30, 1, 0.8, columnTypes, outputColumns, ignoredColumns);
-            NeuralNet net = new NeuralNet(30, 30, 1, 0.05,-1.0,1.0);
+            NeuralNet net = new NeuralNet(30, 30, 1, learningRate, -1.0, 1.0);
 
-            RunUntilDesiredError(0.001, 5, data, net);
+            RunUntilDesiredError(0.000001, 5, data, net, doYouWantToPrint);
         }
-        private void RunIris()
+        private void RunIris(double learningRate = 0.05, bool doYouWantToPrint = false)
         {
             string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
             Data data = new Data("Iris.txt", ',', 4, 3, 0.8, categories);
-            NeuralNet net = new NeuralNet(4, 4, 3, 0.05);
+            NeuralNet net = new NeuralNet(4, 3, 3, learningRate);
 
-            RunUntilDesiredError(0.02, 50, data, net);
+            RunUntilDesiredError(0.02, 50, data, net, doYouWantToPrint);
         }
 
-        private void RunANDGate()
+        private void RunANDGate(double learningRate = 0.1, bool doYouWantToPrint = false)
         {
             string[] categories = { "numeric", "numeric", "numeric" };
             Data data = new Data("AND.txt", ',', 2, 1, 0.8, categories);
-            NeuralNet net = new NeuralNet(2, 2, 1, 0.1);
+            NeuralNet net = new NeuralNet(2, 2, 1, learningRate);
 
-            RunUntilDesiredError(0.001, 50, data, net);
+            RunUntilDesiredError(0.01, 50, data, net, doYouWantToPrint);
         }
 
 
-        private void RunUntilDesiredError(double desiredError, int printErrorEveryXIterations, Data data, NeuralNet net)
+        private void RunUntilDesiredError(double desiredError, int printErrorEveryXIterations, Data data, NeuralNet net, bool doYouWantToPrint = false)
         {
             double error;
             int i = 1;
@@ -105,12 +116,12 @@ namespace NNConsole
             do
             {
                 net.Train(data.LearningInputs.ToRowArrays(), data.LearningOutputs.ToRowArrays(), 10);
-                error = TestNetwork(net, data.TrainingInputs.ToRowArrays(), data.TrainingOutputs.ToRowArrays());
+                error = TestNetwork(net, data.TrainingInputs.ToRowArrays(), data.TrainingOutputs.ToRowArrays(), doYouWantToPrint);
                 i++;
 
                 if (i % printErrorEveryXIterations == 0)
                 {
-                    Console.BackgroundColor = ConsoleColor.Red;
+                    Console.BackgroundColor = ConsoleColor.Blue;
                     Console.WriteLine(error);
                     Console.ResetColor();
                 }
@@ -124,11 +135,9 @@ namespace NNConsole
 
 
 
-        private double TestNetwork(INeuralNet net, double[][] trainingInputs, double[][] trainingOutputs)
+        private double TestNetwork(INeuralNet net, double[][] trainingInputs, double[][] trainingOutputs, bool doYouWantToPrint)
         {
             double batchError = 0;
-
-
 
             for (int i = 0; i < trainingInputs.Length; i++)
             {
@@ -147,7 +156,11 @@ namespace NNConsole
                 }
                 batchError += layerError / trainingOutputs[0].Length;
 
-            //    PrintResults(net,trainingOutputs,i);
+                if (doYouWantToPrint)
+                {
+                    PrintResults(net, trainingOutputs, i);
+                }
+
             }
             return batchError / trainingOutputs.Length;
         }
@@ -159,7 +172,7 @@ namespace NNConsole
 
             for (int j = 0; j < trainingOutputs[0].Length; j++)
             {
-                Console.Write(trainingOutputs[indexI][j] + "\t");
+                Console.Write(trainingOutputs[indexI][j] + "\t\t\t");
             }
             Console.Write("\n");
 

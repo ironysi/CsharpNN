@@ -49,8 +49,8 @@ namespace NeuralNetworkTesting
 
                 //ACT Function is HERE 
 
-                m_output = Sigmoid(m_output);
-               //   m_output = TanH(m_output);
+                m_output = Utilities.Sigmoid(m_output);
+                //    m_output = Utilities.TanH(m_output);
                 //   m_output = BipolarSigmoid(m_output);
             }
         }
@@ -96,26 +96,6 @@ namespace NeuralNetworkTesting
         }
 
 
-        public static double Sigmoid(double value)
-        {
-            return 1 / (1 + Math.Exp(-value));
-        }
-
-
-        /// <summary>
-        /// !!! NOT SURE ABOUT THIS !!!
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static double BipolarSigmoid(double value)
-        {
-            return (1 - Math.Exp(-value)) / (1 + Math.Exp(-value));
-        }
-
-        public static double TanH(double value)
-        {
-            return (Math.Exp(value) - Math.Exp(-value)) / (Math.Exp(value) + Math.Exp(-value));
-        }
 
     }
 }

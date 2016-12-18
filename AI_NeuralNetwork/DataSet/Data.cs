@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace MyDataSet
@@ -35,6 +36,7 @@ namespace MyDataSet
         private Matrix<double> _fillData(string[] columnTypes, string fileName, char splitOn, int[] outputColumns, int[] ignoredColumns)
         {
             string[][] lines = _readLines(fileName, splitOn);
+           // CountDistinctTypesOfOutput(lines);
 
             Standardizer standardizer = new Standardizer(lines, columnTypes, outputColumns, ignoredColumns);
             double[][] dataJaggged = standardizer.StandardizeAll(lines);
@@ -80,7 +82,7 @@ namespace MyDataSet
             }
         }
 
-        public void DivideIntoTestingAndTrainingSet()
+        private void DivideIntoTestingAndTrainingSet()
         {
             int trainingInputsCount = (int)(_percentage * _inputs.RowCount);
 
@@ -93,6 +95,30 @@ namespace MyDataSet
                 _outputs.ColumnCount);
             TrainingOutputs = _outputs.SubMatrix(trainingInputsCount, _outputs.RowCount - trainingInputsCount,
                 0, _outputs.ColumnCount);
+        }
+
+        private void CountDistinctTypesOfOutput(string[][] lines)
+        {
+            List<string> x = new List<string>();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                for (int j = 0; j < lines[0].Length; j++)
+                {
+                    if (j == 11)
+                    {
+                        x.Add(lines[i][j]);
+                    }
+                }
+            }
+
+            var enumerable = x.Distinct();
+
+            foreach (var y in enumerable)
+            {
+                Console.WriteLine(y);
+            }
+
         }
     }
 }
