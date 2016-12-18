@@ -15,11 +15,30 @@ namespace MyDataSet
 
         private Matrix<double> _outputs;
         public Matrix<double> LearningOutputs { get; set; }
-        public Matrix<double> TrainingOutputs { get; set; }
+        public Matrix<double> TestingOutputs { get; set; }
 
         private Matrix<double> _inputs;
         public Matrix<double> LearningInputs { get; set; }
-        public Matrix<double> TrainingInputs { get; set; }
+        public Matrix<double> TestingInputs { get; set; }
+        public double[][] GetLearningOutputs()
+        {
+            return LearningOutputs.ToRowArrays();
+        }
+
+        public double[][] GetLearningInputs()
+        {
+            return LearningInputs.ToRowArrays();
+        }
+
+        public double[][] GetTestingOutputs()
+        {
+            return TestingOutputs.ToRowArrays();
+        }
+
+        public double[][] GetTestingInputs()
+        {
+            return TestingInputs.ToRowArrays();
+        }
 
 
         public Data(string fileName, char splitOn, int inputColumnsCount, int outputColumnsCount, double percentage, string[] columnTypes, int[] outputColumns = null, int[] ignoredColumns = null)
@@ -32,6 +51,8 @@ namespace MyDataSet
 
             DivideIntoTestingAndTrainingSet();
         }
+
+
 
         private Matrix<double> _fillData(string[] columnTypes, string fileName, char splitOn, int[] outputColumns, int[] ignoredColumns)
         {
@@ -88,12 +109,12 @@ namespace MyDataSet
 
             LearningInputs = _inputs.SubMatrix(0, trainingInputsCount, 0,
                 _inputs.ColumnCount);
-            TrainingInputs = _inputs.SubMatrix(trainingInputsCount, _inputs.RowCount - trainingInputsCount,
+            TestingInputs = _inputs.SubMatrix(trainingInputsCount, _inputs.RowCount - trainingInputsCount,
                 0, _inputs.ColumnCount);
 
             LearningOutputs = _outputs.SubMatrix(0, trainingInputsCount, 0,
                 _outputs.ColumnCount);
-            TrainingOutputs = _outputs.SubMatrix(trainingInputsCount, _outputs.RowCount - trainingInputsCount,
+            TestingOutputs = _outputs.SubMatrix(trainingInputsCount, _outputs.RowCount - trainingInputsCount,
                 0, _outputs.ColumnCount);
         }
 
@@ -112,7 +133,7 @@ namespace MyDataSet
                 }
             }
 
-            var enumerable = x.Distinct();
+            IEnumerable<string> enumerable = x.Distinct();
 
             foreach (var y in enumerable)
             {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
+using MyDataSet;
 
 namespace NeuralNetworkTesting
 {
@@ -10,6 +12,7 @@ namespace NeuralNetworkTesting
         private INeuralLayer inputLayer = new NeuralLayer();
         private INeuralLayer outputLayer = new NeuralLayer();
         private INeuralLayer hiddenLayer = new NeuralLayer();
+
 
         public INeuralLayer InputLayer => inputLayer;
         public INeuralLayer HiddenLayer => hiddenLayer;
@@ -35,16 +38,18 @@ namespace NeuralNetworkTesting
             {
                 inputLayer.Add(new Neuron(0));
             }
+       //     inputLayer.Add(new Neuron(1));
 
-
-
-            if (minRange != 0)
+            for (int i = 0; i < outputNeuronCount; i++)
             {
-                for (int i = 0; i < outputNeuronCount; i++)
                 outputLayer.Add(new Neuron(rnd.NextDouble()));
+            }
 
             for (int i = 0; i < hiddenNeuronCount; i++)
+            {
                 hiddenLayer.Add(new Neuron(rnd.NextDouble()));
+            }
+         //   hiddenLayer.Add(new Neuron(1));
 
             /// wire - up input layer to hidden layer
             for (int i = 0; i < hiddenLayer.Count; i++)
@@ -55,26 +60,94 @@ namespace NeuralNetworkTesting
             for (int i = 0; i < outputLayer.Count; i++)
                 for (int j = 0; j < hiddenLayer.Count; j++)
                     outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(Utilities.DoubleBetween(minRange, maxRange)));
-            }
-            else
-            {
-                for (int i = 0; i < outputNeuronCount; i++)
-                    outputLayer.Add(new Neuron(rnd.NextDouble()));
 
-                for (int i = 0; i < hiddenNeuronCount; i++)
-                    hiddenLayer.Add(new Neuron(rnd.NextDouble()));
-
-                // wire-up input layer to hidden layer
-                for (int i = 0; i < hiddenLayer.Count; i++)
-                    for (int j = 0; j < inputLayer.Count; j++)
-                        hiddenLayer[i].Input.Add(inputLayer[j], new NeuralFactor(rnd.NextDouble()));
-
-                // wire-up output layer to hidden layer
-                for (int i = 0; i < outputLayer.Count; i++)
-                    for (int j = 0; j < hiddenLayer.Count; j++)
-                        outputLayer[i].Input.Add(HiddenLayer[j], new NeuralFactor(rnd.NextDouble()));
-            }
         }
+
+        /// <summary>
+        /// Trains NN until it reaches desired error percentage
+        /// </summary>
+        /// <param name="desiredError">Desired error percentage</param>
+        /// <param name="printErrorEveryXIterations">Indicates how often you print error</param>
+        /// <param name="data"></param>
+        /// <param name="doYouWantToPrint"></param>
+        public void RunUntilDesiredError(double desiredError, int printErrorEveryXIterations, Data data, bool doYouWantToPrint = false)
+        {
+            double error;
+            int i = 1;
+
+            do
+            {
+                Train(data.GetLearningInputs(), data.GetLearningOutputs(), 10);
+                error = TestNetwork(data.GetTestingInputs(), data.GetTestingOutputs(), doYouWantToPrint);
+                i++;
+
+                if (i % printErrorEveryXIterations == 0)
+                {
+                    Console.BackgroundColor = ConsoleColor.Blue;
+                    Console.WriteLine(error);
+                    Console.ResetColor();
+                }
+
+            } while (error > desiredError);
+
+            Console.WriteLine("\nError:{0}\t\t Iterations:{1}", error, i * 10);
+            Console.WriteLine("************FINISHED************");
+            Console.ReadLine();
+        }
+
+
+        private double TestNetwork(double[][] testingInputs, double[][] testingOutputs, bool doYouWantToPrint)
+        {
+            double batchError = 0;
+
+            for (int i = 0; i < testingInputs.Length; i++)
+            {
+                double layerError = 0;
+
+                for (int j = 0; j < testingInputs[0].Length; j++)
+                {
+                    InputLayer[j].Output = testingInputs[i][j];
+                }
+                Pulse();
+
+
+                for (int j = 0; j < testingOutputs[0].Length; j++)
+                {
+                    layerError += OutputLayer[j].OutputError;
+                }
+                batchError += layerError / testingOutputs[0].Length;
+
+                if (doYouWantToPrint)
+                {
+                    PrintResults(testingOutputs, i);
+                }
+
+            }
+            return batchError / testingOutputs.Length;
+        }
+
+        private void PrintResults(double[][] testingOutputs, int indexI)
+        {
+            Console.Write("DESIRED OUTPUTS:\t");
+
+            for (int j = 0; j < testingOutputs[0].Length; j++)
+            {
+                Console.Write(testingOutputs[indexI][j] + "\t\t\t");
+            }
+            Console.Write("\n");
+
+            Console.Write("OUTPUT LAYER: \t");
+            for (int j = 0; j < testingOutputs[0].Length; j++)
+            {
+                Console.Write(OutputLayer[j].Output + "\t");
+            }
+            Console.Write("\n");
+        }
+
+        #region Default code
+
+
+
 
         public void Pulse()
         {
@@ -205,6 +278,6 @@ namespace NeuralNetworkTesting
             CalculateErrors(net, desiredResult);
             CalculateAndAppendTransformation(net);
         }
-
+        #endregion
     }
 }

@@ -9,6 +9,17 @@ namespace NeuralNetworkTesting
             Random rnd = new Random(1);
             return rnd.NextDouble() * (max - min) + min;
         }
+
+        //ReLU
+        public static double ReLU(double value)
+        {
+            return Math.Max(0, value);
+        }
+        public static double ReLUDerivative(double value)
+        {
+            return value > 0 ? 1 : 0;
+        }
+
         //Sigmoid
         public static double Sigmoid(double value)
         {
@@ -22,7 +33,6 @@ namespace NeuralNetworkTesting
         public static double TanH(double value)
         {
             return Math.Tanh(value);
-            //return (Math.Exp(value) - Math.Exp(-value)) / (Math.Exp(value) + Math.Exp(-value));
         }
 
         public static double TanHDerivative(double value)
