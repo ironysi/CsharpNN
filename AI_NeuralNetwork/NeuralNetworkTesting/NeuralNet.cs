@@ -144,9 +144,6 @@ namespace NeuralNetworkTesting
 
         #region Default code
 
-
-
-
         public void Pulse()
         {
             lock (this)
