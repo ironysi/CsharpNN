@@ -4,6 +4,9 @@ namespace NeuralNetworkTesting
 {
     public class Utilities
     {
+        /// <summary>
+        /// Random double between two numbers
+        /// </summary>
         public static double DoubleBetween(double min, double max)
         {
             Random rnd = new Random(1);
