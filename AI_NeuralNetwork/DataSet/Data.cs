@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -53,11 +54,9 @@ namespace MyDataSet
         }
 
 
-
         private Matrix<double> _fillData(string[] columnTypes, string fileName, char splitOn, int[] outputColumns, int[] ignoredColumns)
         {
             string[][] lines = _readLines(fileName, splitOn);
-           // CountDistinctTypesOfOutput(lines);
 
             Standardizer standardizer = new Standardizer(lines, columnTypes, outputColumns, ignoredColumns);
             double[][] dataJaggged = standardizer.StandardizeAll(lines);
@@ -67,7 +66,7 @@ namespace MyDataSet
         }
 
 
-        private static string[][] _readLines(string fileName, char splitOn)
+        private string[][] _readLines(string fileName, char splitOn)
         {
             string[] allLines = File.ReadAllLines($"../../../DataSet/Data/{fileName}");
 
@@ -81,9 +80,12 @@ namespace MyDataSet
             {
                 lines[i] = allLines[i].Split(splitOn);
             }
+
             return lines;
         }
-        private static T[,] JaggedTo2DArray<T>(T[][] source)
+
+
+        private T[,] JaggedTo2DArray<T>(T[][] source)
         {
             try
             {
@@ -118,6 +120,32 @@ namespace MyDataSet
                 0, _outputs.ColumnCount);
         }
 
+        private string[][] ClearMissingValues(string[][] allData, int indexOfCorruptedCollumn, string errorString)
+        {
+            double[] x = new double[allData.Length];
+            int k = 0;
+
+            for (int i = 0; i < allData.Length; i++)
+            {
+                if (!allData[i][indexOfCorruptedCollumn].Equals(errorString))
+                {
+                    x[k] = double.Parse(allData[i][indexOfCorruptedCollumn]);
+                    k++;
+                }
+            }
+
+            double columnMedian = Math.Round((x.Sum() / x.Length), 2);
+
+            for (int i = 0; i < allData.Length; i++)
+            {
+                if (allData[i][indexOfCorruptedCollumn].Equals(errorString))
+                {
+                    allData[i][indexOfCorruptedCollumn] = columnMedian.ToString(CultureInfo.InvariantCulture);
+                }
+            }
+
+            return allData;
+        }
         private void CountDistinctTypesOfOutput(string[][] lines)
         {
             List<string> x = new List<string>();
@@ -132,14 +160,12 @@ namespace MyDataSet
                     }
                 }
             }
-
             IEnumerable<string> enumerable = x.Distinct();
 
             foreach (var y in enumerable)
             {
                 Console.WriteLine(y);
             }
-
         }
     }
 }

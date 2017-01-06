@@ -38,7 +38,6 @@ namespace NeuralNetworkTesting
             {
                 inputLayer.Add(new Neuron(0));
             }
-       //     inputLayer.Add(new Neuron(1));
 
             for (int i = 0; i < outputNeuronCount; i++)
             {
@@ -49,7 +48,6 @@ namespace NeuralNetworkTesting
             {
                 hiddenLayer.Add(new Neuron(rnd.NextDouble()));
             }
-         //   hiddenLayer.Add(new Neuron(1));
 
             /// wire - up input layer to hidden layer
             for (int i = 0; i < hiddenLayer.Count; i++)
@@ -265,10 +263,8 @@ namespace NeuralNetworkTesting
                     var inputNode = net.inputLayer[i];
                     hiddenNode.Input[inputNode].H_Vector += hiddenNode.Error * inputNode.Output;
                 }
-
                 hiddenNode.Bias.H_Vector += hiddenNode.Error * hiddenNode.Bias.Weight;
             }
-
         }
 
         public static void BackPropogation_TrainingSession(NeuralNet net, double[] input, double[] desiredResult)

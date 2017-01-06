@@ -19,7 +19,7 @@ namespace NeuralNetworkTesting
         {
             return value > 0 ? 1 : 0;
         }
-
+         
         //Sigmoid
         public static double Sigmoid(double value)
         {
