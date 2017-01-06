@@ -52,6 +52,7 @@
     <Content Include="Data\AND.txt" />
     <Content Include="Data\Breasts.txt" />
     <Content Include="Data\Iris.txt" />
+    <Content Include="Data\TextFile1.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\winequality-red.csv" />

@@ -93,6 +93,42 @@ namespace NeuralNetworkTesting
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// method for testing data given by user
+        /// </summary>
+        /// <param name="testingInputs"></param>
+        /// <param name="standardizer"></param>
+        public void TestOneRow(double[][] allInputs, Standardizer standardizer)
+        {
+            double[] userInputs = new double[inputLayer.Count];
+            string[] strings = new string[inputLayer.Count];
+
+            for (int i = 0; i < InputLayer.Count; i++)
+            {
+                Console.WriteLine("insert one input: ");
+                double x;
+                double.TryParse(Console.ReadLine(), out x);
+                strings[i] = x.ToString();
+            }
+
+            userInputs = standardizer.GetStandardRow(strings);
+
+            for (int i = 0; i < inputLayer.Count; i++)
+            {
+                inputLayer[i].Output = userInputs[i];
+            }
+
+            Pulse();
+
+            for (int i = 0; i < outputLayer.Count; i++)
+            {
+                lock (this)
+                {
+                    Console.Write(outputLayer[i].Output + "\t");
+                }
+            }
+            Console.ReadLine();
+        }
 
         private double TestNetwork(double[][] testingInputs, double[][] testingOutputs, bool doYouWantToPrint)
         {

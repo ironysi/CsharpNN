@@ -27,16 +27,16 @@ namespace NNConsole
                 switch (c)
                 {
                     case 1:
-                        p.RunIris(0.0001,0.05);
+                        p.RunIris(0.01, 0.05);
                         break;
                     case 2:
-                        p.RunBCancer(0.001,0.05);
+                        p.RunBCancer(0.001, 0.05);
                         break;
                     case 3:
-                        p.RunANDGate(0.01,0.1);
+                        p.RunANDGate(0.01, 0.1);
                         break;
                     case 4:
-                        p.RunWine(0.01,0.005,false);
+                        p.RunWine(0.01, 0.005, false);
                         break;
                     case 5:
                         p.Test();
@@ -52,11 +52,10 @@ namespace NNConsole
 
         private void Test()
         {
-            Console.WriteLine("rnd:\t" + Math.Pow(10,2));
-            Console.WriteLine("util:\t" + Utilities.DoubleBetween(0, 1));
+
         }
 
-        private void RunWine(double desiredErrorPercentage,double learningRate = 0.1, bool doYouWantToPrint = false)
+        private void RunWine(double desiredErrorPercentage, double learningRate = 0.1, bool doYouWantToPrint = false)
         {
             string[] categories =
             {
@@ -67,11 +66,11 @@ namespace NNConsole
             Data data = new Data("winequality-red.csv", ';', 11, 6, 0.8, categories);
             NeuralNet net = new NeuralNet(11, 14, 6, learningRate);
 
-            net.RunUntilDesiredError(desiredErrorPercentage, 10, data,doYouWantToPrint);
+            net.RunUntilDesiredError(desiredErrorPercentage, 10, data, doYouWantToPrint);
         }
 
 
-        private void RunBCancer(double desiredErrorPercentage,double learningRate = 0.05, bool doYouWantToPrint = false)
+        private void RunBCancer(double desiredErrorPercentage, double learningRate = 0.05, bool doYouWantToPrint = false)
         {
             string[] columnTypes =
             {
@@ -88,16 +87,19 @@ namespace NNConsole
 
             net.RunUntilDesiredError(desiredErrorPercentage, 5, data, doYouWantToPrint);
         }
-        private void RunIris(double desiredErrorPercentage,double learningRate = 0.05, bool doYouWantToPrint = false)
+        private void RunIris(double desiredErrorPercentage, double learningRate = 0.05, bool doYouWantToPrint = false)
         {
             string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
             Data data = new Data("Iris.txt", ',', 4, 3, 0.8, categories);
-            NeuralNet net = new NeuralNet(4, 3, 3, learningRate,0,1);
+            NeuralNet net = new NeuralNet(4, 3, 3, learningRate, 0, 1);
 
             net.RunUntilDesiredError(desiredErrorPercentage, 50, data, doYouWantToPrint);
+
+            net.TestOneRow(Utilities.Concat(data.GetTestingInputs(), data.GetLearningInputs()), data.standardizer);
         }
 
-        private void RunANDGate(double desiredErrorPercentage,double learningRate = 0.1, bool doYouWantToPrint = false)
+
+        private void RunANDGate(double desiredErrorPercentage, double learningRate = 0.1, bool doYouWantToPrint = false)
         {
             string[] categories = { "numeric", "numeric", "numeric" };
             Data data = new Data("AND.txt", ',', 2, 1, 0.8, categories);

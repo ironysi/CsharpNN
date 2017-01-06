@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace MyDataSet
@@ -15,12 +14,14 @@ namespace MyDataSet
         private double _percentage;
 
         private Matrix<double> _outputs;
-        public Matrix<double> LearningOutputs { get; set; }
-        public Matrix<double> TestingOutputs { get; set; }
+        private Matrix<double> LearningOutputs { get; set; }
+        private Matrix<double> TestingOutputs { get; set; }
 
         private Matrix<double> _inputs;
-        public Matrix<double> LearningInputs { get; set; }
-        public Matrix<double> TestingInputs { get; set; }
+        private Matrix<double> LearningInputs { get; set; }
+        private Matrix<double> TestingInputs { get; set; }
+
+        public Standardizer standardizer;
         public double[][] GetLearningOutputs()
         {
             return LearningOutputs.ToRowArrays();
@@ -58,7 +59,7 @@ namespace MyDataSet
         {
             string[][] lines = _readLines(fileName, splitOn);
 
-            Standardizer standardizer = new Standardizer(lines, columnTypes, outputColumns, ignoredColumns);
+            standardizer = new Standardizer(lines, columnTypes, outputColumns, ignoredColumns);
             double[][] dataJaggged = standardizer.StandardizeAll(lines);
             double[,] data = JaggedTo2DArray(dataJaggged);
             Matrix<double> result = Matrix<double>.Build.DenseOfArray(data);
