@@ -19,7 +19,7 @@ namespace NeuralNetworkTesting
         public INeuralLayer HiddenLayer => hiddenLayer;
         public INeuralLayer OutputLayer => outputLayer;
         public double LearningRate { get; set; }
-        public int BatchSize = 32;
+        private readonly int _batchSize;
 
         private struct SmallBatch
         {
@@ -37,11 +37,12 @@ namespace NeuralNetworkTesting
         /// <param name="learningRate">Alpha aka. learning rate</param>
         /// <param name="minRange">Lowes value of weights</param>
         /// <param name="maxRange">Highest value of weights</param>
-        public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate,
+        public NeuralNet(int inputNeuronCount, int hiddenNeuronCount, int outputNeuronCount, double learningRate, int batchSize,
             double minRange = 0, double maxRange = 1)
         {
             Random rnd = new Random(1);
             LearningRate = learningRate;
+            _batchSize = batchSize;
 
             for (int i = 0; i < inputNeuronCount; i++)
             {
@@ -82,7 +83,7 @@ namespace NeuralNetworkTesting
             double error;
             double lastError = 1;
             int i = 1;
-            SmallBatch.SmallBatchSize = BatchSize;
+            SmallBatch.SmallBatchSize = _batchSize;
 
             do
             {
@@ -114,11 +115,11 @@ namespace NeuralNetworkTesting
             Console.WriteLine("\nError: {0}\t\t Epochs: {1}\t\t Lines of data required to learn: {2}", error, i, SmallBatch.SmallBatchSize * i);
             Console.WriteLine("************FINISHED************");
         }
-        public void RunUntilDesiredError(Data data)
+        public void RunUntilDesiredError(Data data, int iterarions)
         {
             double error;
             int i = 1;
-            SmallBatch.SmallBatchSize = BatchSize;
+            SmallBatch.SmallBatchSize = _batchSize;
             string stop = "";
 
             do
@@ -128,7 +129,7 @@ namespace NeuralNetworkTesting
                 Train(SmallBatch.SelectedInputs, SmallBatch.SelectedOutputs, 10);
                 error = TestNetwork(data.GetTestingInputs(), data.GetTestingOutputs(), false);
                 i++;
-                if (i > 40000)
+                if (i > iterarions)
                 {
                     stop = "NaN";
                 }
