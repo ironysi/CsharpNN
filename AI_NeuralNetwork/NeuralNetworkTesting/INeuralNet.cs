@@ -7,9 +7,5 @@ namespace NeuralNetworkTesting
         INeuralLayer OutputLayer { get; }
 
         double LearningRate { get; set; }
-
-        void Pulse();
-        void ApplyLearning();
-        void InitializeLearning();
     }
 }

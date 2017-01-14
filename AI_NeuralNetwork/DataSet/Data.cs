@@ -147,7 +147,8 @@ namespace MyDataSet
 
             return allData;
         }
-        private void CountDistinctTypesOfOutput(string[][] lines)
+
+        private List<string> CountDistinctTypesOfOutput(string[][] lines, int positionOfOutput)
         {
             List<string> x = new List<string>();
 
@@ -155,18 +156,19 @@ namespace MyDataSet
             {
                 for (int j = 0; j < lines[0].Length; j++)
                 {
-                    if (j == 11)
+                    if (j == positionOfOutput)
                     {
                         x.Add(lines[i][j]);
                     }
                 }
             }
-            IEnumerable<string> enumerable = x.Distinct();
 
-            foreach (var y in enumerable)
+            foreach (string y in x.Distinct())
             {
                 Console.WriteLine(y);
             }
+            return x.Distinct() as List<string>;
         }
+
     }
 }

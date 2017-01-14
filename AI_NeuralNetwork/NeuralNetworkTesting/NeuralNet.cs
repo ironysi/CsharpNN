@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using MyDataSet;
 
@@ -18,6 +19,14 @@ namespace NeuralNetworkTesting
         public INeuralLayer HiddenLayer => hiddenLayer;
         public INeuralLayer OutputLayer => outputLayer;
         public double LearningRate { get; set; }
+        public int BatchSize = 32;
+
+        private struct SmallBatch
+        {
+            public static double[][] SelectedInputs;
+            public static double[][] SelectedOutputs;
+            public static int SmallBatchSize;
+        }
 
         /// <summary>
         /// Includes weight range parameter
@@ -71,36 +80,90 @@ namespace NeuralNetworkTesting
         public void RunUntilDesiredError(double desiredError, int printErrorEveryXIterations, Data data, bool doYouWantToPrint = false)
         {
             double error;
+            double lastError = 1;
             int i = 1;
+            SmallBatch.SmallBatchSize = BatchSize;
 
             do
             {
-                Train(data.GetLearningInputs(), data.GetLearningOutputs(), 10);
+                CreateSmallBatch(data.GetLearningInputs(), data.GetLearningOutputs());
+
+                Train(SmallBatch.SelectedInputs, SmallBatch.SelectedOutputs, 10);
                 error = TestNetwork(data.GetTestingInputs(), data.GetTestingOutputs(), doYouWantToPrint);
                 i++;
 
                 if (i % printErrorEveryXIterations == 0)
                 {
-                    Console.BackgroundColor = ConsoleColor.Blue;
-                    Console.WriteLine(error);
-                    Console.ResetColor();
+                    if (lastError < error)
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine(error);
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.Blue;
+                        Console.WriteLine(error);
+                        Console.ResetColor();
+                    }
+                    lastError = error;
                 }
-
+               
             } while (error > desiredError);
 
-            Console.WriteLine("\nError:{0}\t\t Iterations:{1}", error, i * 10);
+            Console.WriteLine("\nError: {0}\t\t Epochs: {1}\t\t Lines of data required to learn: {2}", error, i, SmallBatch.SmallBatchSize * i);
             Console.WriteLine("************FINISHED************");
-            Console.ReadLine();
+        }
+        public void RunUntilDesiredError(Data data)
+        {
+            double error;
+            int i = 1;
+            SmallBatch.SmallBatchSize = BatchSize;
+            string stop = "";
+
+            do
+            {
+                CreateSmallBatch(data.GetLearningInputs(), data.GetLearningOutputs());
+
+                Train(SmallBatch.SelectedInputs, SmallBatch.SelectedOutputs, 10);
+                error = TestNetwork(data.GetTestingInputs(), data.GetTestingOutputs(), false);
+                i++;
+                if (i > 40000)
+                {
+                    stop = "NaN";
+                }
+            } while (error > 0.001 && stop != "NaN" );
+
+            Console.WriteLine(stop);
+            Console.WriteLine("Error: {0}\t\t Epochs: {1}\t\t Lines of data required to learn: {2}", error, i, SmallBatch.SmallBatchSize * i);
+            Console.WriteLine("************FINISHED************\n\n");
+        }
+
+
+        public void CreateSmallBatch(double[][] learningInputs, double[][] learningOutputs, int batchSize = 32)
+        {
+            double[][] selectedInputs = new double[batchSize][];
+            double[][] selectedOutputs = new double[batchSize][];
+            Random rnd = new Random();
+
+            for (int i = 0; i < batchSize; i++)
+            {
+                int randomNumber = rnd.Next(0, learningInputs.Length);
+
+                selectedInputs[i] = learningInputs[randomNumber];
+                selectedOutputs[i] = learningOutputs[randomNumber];
+            }
+
+            SmallBatch.SelectedInputs = selectedInputs;
+            SmallBatch.SelectedOutputs = selectedOutputs;
+            SmallBatch.SmallBatchSize = batchSize;
         }
 
         /// <summary>
         /// method for testing data given by user
         /// </summary>
-        /// <param name="testingInputs"></param>
-        /// <param name="standardizer"></param>
         public void TestOneRow(double[][] allInputs, Standardizer standardizer)
         {
-            double[] userInputs = new double[inputLayer.Count];
             string[] strings = new string[inputLayer.Count];
 
             for (int i = 0; i < InputLayer.Count; i++)
@@ -108,10 +171,10 @@ namespace NeuralNetworkTesting
                 Console.WriteLine("insert one input: ");
                 double x;
                 double.TryParse(Console.ReadLine(), out x);
-                strings[i] = x.ToString();
+                strings[i] = x.ToString(CultureInfo.InvariantCulture);
             }
 
-            userInputs = standardizer.GetStandardRow(strings);
+            double[] userInputs = standardizer.GetStandardRow(strings);
 
             for (int i = 0; i < inputLayer.Count; i++)
             {
@@ -153,25 +216,25 @@ namespace NeuralNetworkTesting
 
                 if (doYouWantToPrint)
                 {
-                    PrintResults(testingOutputs, i);
+                    PrintResults(testingOutputs[i]);
                 }
 
             }
             return batchError / testingOutputs.Length;
         }
 
-        private void PrintResults(double[][] testingOutputs, int indexI)
+        private void PrintResults(double[] testingOutputs)
         {
             Console.Write("DESIRED OUTPUTS:\t");
 
-            for (int j = 0; j < testingOutputs[0].Length; j++)
+            for (int j = 0; j < testingOutputs.Length; j++)
             {
-                Console.Write(testingOutputs[indexI][j] + "\t\t\t");
+                Console.Write(testingOutputs[j] + "\t\t\t");
             }
             Console.Write("\n");
 
             Console.Write("OUTPUT LAYER: \t");
-            for (int j = 0; j < testingOutputs[0].Length; j++)
+            for (int j = 0; j < outputLayer.Count; j++)
             {
                 Console.Write(OutputLayer[j].Output + "\t");
             }
@@ -180,7 +243,7 @@ namespace NeuralNetworkTesting
 
         #region Default code
 
-        public void Pulse()
+        private void Pulse()
         {
             lock (this)
             {
@@ -189,7 +252,7 @@ namespace NeuralNetworkTesting
             }
         }
 
-        public void ApplyLearning()
+        private void ApplyLearning()
         {
             lock (this)
             {
@@ -198,7 +261,7 @@ namespace NeuralNetworkTesting
             }
         }
 
-        public void InitializeLearning()
+        private void InitializeLearning()
         {
             lock (this)
             {
@@ -207,7 +270,7 @@ namespace NeuralNetworkTesting
             }
         }
 
-        public void Train(double[][] inputs, double[][] outputs, int iterations)
+        private void Train(double[][] inputs, double[][] outputs, int iterations)
         {
             lock (this)
             {
@@ -223,12 +286,6 @@ namespace NeuralNetworkTesting
             }
         }
 
-
-        public void PreparePerceptionLayerForPulse(double[] input)
-        {
-            PreparePerceptionLayerForPulse(this, input);
-        }
-
         private static void CalculateErrors(NeuralNet net, double[] desiredResults)
         {
             double temp;
@@ -241,6 +298,8 @@ namespace NeuralNetworkTesting
                 temp = outputNode.Output;
                 outputNode.OutputError = Math.Abs(desiredResults[i] - temp);
                 outputNode.Error = (desiredResults[i] - temp) * Utilities.SigmoidDerivative(temp); //* temp * (1.0F - temp);
+                                                                                                   //    outputNode.Error = (desiredResults[i] - temp) * Utilities.ReLUDerivative(temp); //* temp * (1.0F - temp);
+
             }
 
             // calculate hidden layer error values
@@ -254,6 +313,7 @@ namespace NeuralNetworkTesting
                 {
                     outputNode = net.outputLayer[j];
                     error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * Utilities.SigmoidDerivative(temp);
+                    //   error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * Utilities.ReLUDerivative(temp);
                 }
 
                 hiddenNode.Error = error;
@@ -261,14 +321,14 @@ namespace NeuralNetworkTesting
         }
 
 
-        public static void PreparePerceptionLayerForPulse(NeuralNet net, double[] input)
+        private static void PreparePerceptionLayerForPulse(NeuralNet net, double[] input)
         {
             // initialize data
             for (int i = 0; i < net.inputLayer.Count; i++)
                 net.inputLayer[i].Output = input[i];
         }
 
-        public static void CalculateAndAppendTransformation(NeuralNet net)
+        private static void CalculateAndAppendTransformation(NeuralNet net)
         {
             INeuron hiddenNode;
 
@@ -300,7 +360,7 @@ namespace NeuralNetworkTesting
             }
         }
 
-        public static void BackPropogation_TrainingSession(NeuralNet net, double[] input, double[] desiredResult)
+        private static void BackPropogation_TrainingSession(NeuralNet net, double[] input, double[] desiredResult)
         {
             PreparePerceptionLayerForPulse(net, input);
             net.Pulse();

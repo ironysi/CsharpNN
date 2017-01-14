@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MyDataSet;
@@ -21,24 +22,28 @@ namespace NNConsole
                 Console.WriteLine("2.\tBreast Cancer NN");
                 Console.WriteLine("3.\tAND Gate");
                 Console.WriteLine("4.\tWine NN");
+                Console.WriteLine("5.\tIris Grid Search NN");
 
                 int.TryParse(Console.ReadLine(), out c);
 
                 switch (c)
                 {
                     case 1:
-                        p.RunIris(0.01, 0.05);
+                        p.RunIris(0.001, 0.1);
                         break;
                     case 2:
-                        p.RunBCancer(0.001, 0.05);
+                        p.RunBCancer(0.0000001, 0.005);
                         break;
                     case 3:
                         p.RunANDGate(0.01, 0.1);
                         break;
                     case 4:
-                        p.RunWine(0.01, 0.005, false);
+                        p.RunWine(0.001, 0.001);
                         break;
                     case 5:
+                        p.IrisGridSearch(new int[] { 8, 16/*, 32, 64 */}, new double[] { 0.1, 0.01/*, 0.001*/ });
+                        break;
+                    case 6:
                         p.Test();
                         break;
                     default:
@@ -52,7 +57,7 @@ namespace NNConsole
 
         private void Test()
         {
-
+            Console.WriteLine("Hello world, is that You?");
         }
 
         private void RunWine(double desiredErrorPercentage, double learningRate = 0.1, bool doYouWantToPrint = false)
@@ -91,14 +96,31 @@ namespace NNConsole
         {
             string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
             Data data = new Data("Iris.txt", ',', 4, 3, 0.8, categories);
-            NeuralNet net = new NeuralNet(4, 3, 3, learningRate, 0, 1);
+            NeuralNet net = new NeuralNet(4, 3, 3, learningRate);
 
             net.RunUntilDesiredError(desiredErrorPercentage, 50, data, doYouWantToPrint);
-
-            net.TestOneRow(Utilities.Concat(data.GetTestingInputs(), data.GetLearningInputs()), data.standardizer);
+            //   net.TestOneRow(Utilities.Concat(data.GetTestingInputs(), data.GetLearningInputs()), data.standardizer);
         }
 
+        private void IrisGridSearch(int[] batchSizes, double[] learningRates)
+        {
+            for (int i = 0; i < batchSizes.Length; i++)
+            {
+                for (int k = 0; k < learningRates.Length; k++)
+                {
+                    Console.WriteLine("\nBatch size: {0}\t\t\t\t\t\t\tLearning rate: {1}", batchSizes[i],
+                        learningRates[k]);
 
+                    string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
+                    Data data = new Data("Iris.txt", ',', 4, 3, 0.8, categories);
+                    NeuralNet net = new NeuralNet(4, 3, 3, learningRates[k]);
+                    net.BatchSize = batchSizes[i];
+                    net.RunUntilDesiredError(data);
+                }
+            }
+
+           
+        }
         private void RunANDGate(double desiredErrorPercentage, double learningRate = 0.1, bool doYouWantToPrint = false)
         {
             string[] categories = { "numeric", "numeric", "numeric" };
