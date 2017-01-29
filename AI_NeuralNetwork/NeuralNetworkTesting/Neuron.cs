@@ -49,7 +49,7 @@ namespace NeuralNetworkTesting
                 //ACT Function is HERE 
 
                 m_output = Utilities.Sigmoid(m_output);
-            //    m_output = Utilities.ReLU(m_output);
+       //         m_output = Utilities.ReLU(m_output);
             }
         }
 

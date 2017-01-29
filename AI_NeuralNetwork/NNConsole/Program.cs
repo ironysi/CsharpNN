@@ -13,7 +13,6 @@ namespace NNConsole
         {
             Program p = new Program();
 
-            int c;
             while (true)
             {
                 Console.WriteLine(@"******** Welcome! ********");
@@ -24,6 +23,7 @@ namespace NNConsole
                 Console.WriteLine("4.\tWine NN");
                 Console.WriteLine("5.\tIris Grid Search NN");
 
+                int c;
                 int.TryParse(Console.ReadLine(), out c);
 
                 switch (c)
@@ -32,13 +32,13 @@ namespace NNConsole
                         p.RunIris(0.001);
                         break;
                     case 2:
-                        p.RunBCancer(0.001);
+                        p.RunBCancer(0.001,0.1,true);
                         break;
                     case 3:
                         p.RunANDGate(0.01);
                         break;
                     case 4:
-                        p.RunWine(0.001);
+                        p.RunWine(0.001,0.1);
                         break;
                     case 5:
 

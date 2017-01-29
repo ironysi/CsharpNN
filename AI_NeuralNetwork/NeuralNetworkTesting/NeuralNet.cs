@@ -298,8 +298,8 @@ namespace NeuralNetworkTesting
                 outputNode = net.outputLayer[i];
                 temp = outputNode.Output;
                 outputNode.OutputError = Math.Abs(desiredResults[i] - temp);
-                outputNode.Error = (desiredResults[i] - temp) * Utilities.SigmoidDerivative(temp); //* temp * (1.0F - temp);
-                                                                                                   //    outputNode.Error = (desiredResults[i] - temp) * Utilities.ReLUDerivative(temp); //* temp * (1.0F - temp);
+               outputNode.Error = (desiredResults[i] - temp) * Utilities.SigmoidDerivative(temp); //* temp * (1.0F - temp);
+              //  outputNode.Error = (desiredResults[i] - temp) * Utilities.ReLUDerivative(temp); //* temp * (1.0F - temp);
 
             }
 
@@ -314,7 +314,7 @@ namespace NeuralNetworkTesting
                 {
                     outputNode = net.outputLayer[j];
                     error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * Utilities.SigmoidDerivative(temp);
-                    //   error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * Utilities.ReLUDerivative(temp);
+              //      error += (outputNode.Error * outputNode.Input[hiddenNode].Weight) * Utilities.ReLUDerivative(temp);
                 }
 
                 hiddenNode.Error = error;
