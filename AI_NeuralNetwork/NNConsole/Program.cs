@@ -27,7 +27,7 @@ namespace NNConsole
                 switch (c)
                 {
                     case 1:
-                        p.RunIris(0.01, 0.05);
+                        p.RunIris(0.001, 0.05);
                         break;
                     case 2:
                         p.RunBCancer(0.001, 0.05);
