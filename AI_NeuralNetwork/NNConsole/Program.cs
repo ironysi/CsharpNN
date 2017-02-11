@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MyDataSet;
@@ -12,7 +13,6 @@ namespace NNConsole
         {
             Program p = new Program();
 
-            int c;
             while (true)
             {
                 Console.WriteLine(@"******** Welcome! ********");
@@ -21,24 +21,30 @@ namespace NNConsole
                 Console.WriteLine("2.\tBreast Cancer NN");
                 Console.WriteLine("3.\tAND Gate");
                 Console.WriteLine("4.\tWine NN");
+                Console.WriteLine("5.\tIris Grid Search NN");
 
+                int c;
                 int.TryParse(Console.ReadLine(), out c);
 
                 switch (c)
                 {
                     case 1:
-                        p.RunIris(0.001, 0.05);
+                        p.RunIris(0.001);
                         break;
                     case 2:
-                        p.RunBCancer(0.001, 0.05);
+                        p.RunBCancer(0.001,0.1,true);
                         break;
                     case 3:
-                        p.RunANDGate(0.01, 0.1);
+                        p.RunANDGate(0.01);
                         break;
                     case 4:
-                        p.RunWine(0.01, 0.005, false);
+                        p.RunWine(0.001,0.1);
                         break;
                     case 5:
+
+                        p.GridSearch(new int[] { 8, 16, 32, 64 }, new double[] { 0.1, 0.01, 0.001 });
+                        break;
+                    case 6:
                         p.Test();
                         break;
                     default:
@@ -52,7 +58,7 @@ namespace NNConsole
 
         private void Test()
         {
-
+            Console.WriteLine("Hello world, is that You?");
         }
 
         private void RunWine(double desiredErrorPercentage, double learningRate = 0.1, bool doYouWantToPrint = false)
@@ -64,13 +70,14 @@ namespace NNConsole
             };
             // Output data (quality is 6 numbers)
             Data data = new Data("winequality-red.csv", ';', 11, 6, 0.8, categories);
-            NeuralNet net = new NeuralNet(11, 14, 6, learningRate);
+            // batchsize: 8 and LR: 0.1 
+            NeuralNet net = new NeuralNet(11, 14, 6, learningRate, 8);
 
             net.RunUntilDesiredError(desiredErrorPercentage, 10, data, doYouWantToPrint);
         }
 
 
-        private void RunBCancer(double desiredErrorPercentage, double learningRate = 0.05, bool doYouWantToPrint = false)
+        private void RunBCancer(double desiredErrorPercentage, double learningRate = 0.1, bool doYouWantToPrint = false)
         {
             string[] columnTypes =
             {
@@ -83,27 +90,50 @@ namespace NNConsole
             int[] ignoredColumns = { 0 };
 
             Data data = new Data("Breasts.txt", ',', 30, 1, 0.8, columnTypes, outputColumns, ignoredColumns);
-            NeuralNet net = new NeuralNet(30, 30, 1, learningRate, -1.0, 1.0);
+
+            // batchsize: 8 and LR: 0.1 
+            NeuralNet net = new NeuralNet(30, 30, 1, learningRate, 8, -1.0, 1.0);
+
+
 
             net.RunUntilDesiredError(desiredErrorPercentage, 5, data, doYouWantToPrint);
         }
-        private void RunIris(double desiredErrorPercentage, double learningRate = 0.05, bool doYouWantToPrint = false)
+        private void RunIris(double desiredErrorPercentage, double learningRate = 0.1, bool doYouWantToPrint = false)
         {
             string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
             Data data = new Data("Iris.txt", ',', 4, 3, 0.8, categories);
-            NeuralNet net = new NeuralNet(4, 3, 3, learningRate, 0, 1);
+
+            // batchsize: 16 and LR: 0.1 
+            NeuralNet net = new NeuralNet(4, 3, 3, learningRate, 16);
 
             net.RunUntilDesiredError(desiredErrorPercentage, 50, data, doYouWantToPrint);
-
-            net.TestOneRow(Utilities.Concat(data.GetTestingInputs(), data.GetLearningInputs()), data.standardizer);
+            //   net.TestOneRow(Utilities.Concat(data.GetTestingInputs(), data.GetLearningInputs()), data.standardizer);
         }
 
+        private void GridSearch(int[] batchSizes, double[] learningRates)
+        {
+            for (int i = 0; i < batchSizes.Length; i++)
+            {
+                for (int k = 0; k < learningRates.Length; k++)
+                {
+                    Console.WriteLine("\nBatch size: {0}\t\t\t\t\t\t\tLearning rate: {1}", batchSizes[i],
+                        learningRates[k]);
 
+                    string[] categories = { "numeric", "numeric", "numeric", "numeric", "categorical" };
+                    Data data = new Data("Iris.txt", ',', 4, 3, 0.8, categories);
+
+                    // batchsize: 16 and LR: 0.1 
+                    NeuralNet net = new NeuralNet(4, 3, 3, learningRates[k], batchSizes[i]);
+
+                    net.RunUntilDesiredError(data, 1500);
+                }
+            }
+        }
         private void RunANDGate(double desiredErrorPercentage, double learningRate = 0.1, bool doYouWantToPrint = false)
         {
             string[] categories = { "numeric", "numeric", "numeric" };
             Data data = new Data("AND.txt", ',', 2, 1, 0.8, categories);
-            NeuralNet net = new NeuralNet(2, 2, 1, learningRate);
+            NeuralNet net = new NeuralNet(2, 2, 1, learningRate, 32);
 
             net.RunUntilDesiredError(desiredErrorPercentage, 50, data, doYouWantToPrint);
         }
